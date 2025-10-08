@@ -61,6 +61,30 @@
   .auth-panel h2 { color: var(--neon); margin-top:0; }
   .error { color: #ff8080; min-height: 20px; }
 
+  /* ===== virtual joystick ===== */
+  #joystick {
+    position: fixed;
+    bottom: 40px;
+    left: 40px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+    border: 2px solid rgba(0,255,255,0.3);
+    touch-action: none;
+    z-index: 999;
+  }
+  #stick {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(0,255,255,0.4);
+    border-radius: 50%;
+    left: 30px;
+    top: 30px;
+    transition: 0.05s;
+  }
+
   @media (max-width:520px){
     .menu-box{padding:18px}
     h1{font-size:26px}
@@ -80,7 +104,6 @@
   </div>
 </div>
 
-<!-- music toggle + signature -->
 <button id="musicToggle" style="position:fixed;top:12px;left:12px;z-index:4;padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(45deg,#00ffcc,#00ccff);font-weight:700;color:#000;cursor:pointer">🎵 Play</button>
 <div id="signature" style="position:fixed;bottom:10px;left:12px;z-index:4;color:rgba(255,255,255,0.7)">MADE BY ILAYS</div>
 
@@ -94,6 +117,11 @@
     <input id="passwordConfirm" type="password" placeholder="Confirm Password">
     <button id="createAccountBtn">Create Account</button>
   </div>
+</div>
+
+<!-- joystick -->
+<div id="joystick" style="display:none;">
+  <div id="stick"></div>
 </div>
 
 <script>
@@ -147,9 +175,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordConfirmInput = document.getElementById('passwordConfirm');
   const messageDiv = document.getElementById('authMessage');
   const modal = document.getElementById('authModal');
+  const joystick = document.getElementById('joystick');
 
   if(localStorage.getItem('accountCreated')){
     modal.style.display='none';
+    joystick.style.display='block';
     return;
   }
 
@@ -165,9 +195,37 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem('accountCreated','true');
     alert('Account created: '+u);
     modal.style.display='none';
+    joystick.style.display='block';
   });
+});
+
+/* ===== virtual joystick logic (left-right only) ===== */
+const joystick = document.getElementById('joystick');
+const stick = document.getElementById('stick');
+let joyActive=false, joyX=0;
+
+joystick.addEventListener('touchstart',e=>{
+  joyActive=true;
+});
+
+joystick.addEventListener('touchend',e=>{
+  joyActive=false;
+  stick.style.left='30px';
+});
+
+joystick.addEventListener('touchmove',e=>{
+  if(!joyActive)return;
+  const rect=joystick.getBoundingClientRect();
+  const touch=e.touches[0];
+  let x=touch.clientX-rect.left-rect.width/2;
+  x=Math.max(-40,Math.min(40,x)); // רק ימינה ושמאלה
+  stick.style.left=(rect.width/2-30+x)+'px';
+  joyX=x/40; // ערך בין -1 ל-1
+  // כאן תוכל להשתמש בערך הזה במשחקים שלך
+  // console.log('Move:',joyX);
 });
 </script>
 
 </body>
 </html>
+
