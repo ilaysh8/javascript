@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Click Challenge 🖱️</title>
+<style>
+  body {
+    margin:0; font-family:Arial, sans-serif;
+    overflow:hidden; color:white; text-align:center;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    height:100vh;
+    background:black;
+    user-select:none;
+  }
+  canvas#bg, canvas#effects {
+    position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;
+  }
+  canvas#bg { z-index:-2; }
+  #effects { pointer-events:none; }
+  h1 { font-size:40px; margin-bottom:20px; text-shadow:0 0 10px black; }
+  .btn {
+    padding:15px 35px; margin:15px;
+    font-size:22px; font-weight:bold;
+    border:none; border-radius:15px; cursor:pointer;
+    background:linear-gradient(45deg,#00ffcc,#00ccff);
+    color:black; transition:0.2s;
+    box-shadow:0 0 20px rgba(0,255,200,0.8);
+  }
+  .btn:hover { transform:scale(1.1); }
+  #timeLeft { font-size:36px; color:#ff3333; text-shadow:0 0 10px black; margin:10px; }
+  #clicks { font-size:36px; color:#ffff66; text-shadow:0 0 10px black; margin:10px; }
+  #result { font-size:24px; margin-top:20px; text-shadow:0 0 8px black; }
+  #highScore {
+    margin-top:30px; font-size:28px; color:#00ffcc;
+    text-shadow:0 0 10px black;
+  }
+  #clickText {
+    font-size:80px;
+    font-weight:bold;
+    margin-top:40px;
+    background:linear-gradient(45deg,#ffcc00,#ff6600);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 25px rgba(255,150,0,0.8);
+  }
+  #animalImg {
+    width:150px;
+    height:auto;
+    margin-top:15px;
+    filter: drop-shadow(0 0 20px white);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<canvas id="effects"></canvas>
+
+<h1>🖱️ Click Challenge 🖱️</h1>
+<button class="btn" onclick="toggleMusic()">🎵 Play / Pause Music</button>
+
+<div id="setup">
+  <p>Choose time (seconds):</p>
+  <input type="number" id="timeInput" min="1" max="10000" value="10">
+  <button class="btn" onclick="startGame()">Start</button>
+</div>
+
+<div id="game" style="display:none;">
+  <h2>Click as fast as you can!</h2>
+  <p>⏱️ Time left: <span id="timeLeft"></span> s</p>
+  <p>🖱️ Clicks: <span id="clicks">0</span></p>
+  <div id="clickText">Click!</div>
+</div>
+
+<div id="result"></div>
+<div id="highScore">🏆 Current High Score: <span id="bestScore">0</span> clicks</div>
+
+<script>
+// --- Space background ---
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const stars = [];
+for(let i=0;i<300;i++){
+  stars.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*2+1,
+    speed: Math.random()*0.5+0.1
+  });
+}
+
+function drawStars(){
+  ctx.fillStyle='black';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='white';
+  stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
+    s.y += s.speed;
+    if(s.y>canvas.height) s.y=0;
+  });
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// --- Effects (explosion) ---
+const effectCanvas = document.getElementById('effects');
+const ectx = effectCanvas.getContext('2d');
+effectCanvas.width = window.innerWidth;
+effectCanvas.height = window.innerHeight;
+let particles = [];
+
+function createExplosion(x, y) {
+  for(let i=0;i<20;i++){
+    particles.push({
+      x, y,
+      r: Math.random()*4+2,
+      dx: (Math.random()-0.5)*10,
+      dy: (Math.random()-0.5)*10,
+      life: 20
+    });
+  }
+}
+
+function animateExplosion(){
+  ectx.clearRect(0,0,effectCanvas.width,effectCanvas.height);
+  particles.forEach((p,i)=>{
+    ectx.beginPath();
+    ectx.fillStyle=`rgba(255,255,255,${p.life/20})`;
+    ectx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ectx.fill();
+    p.x += p.dx;
+    p.y += p.dy;
+    p.life--;
+    if(p.life<=0) particles.splice(i,1);
+  });
+  requestAnimationFrame(animateExplosion);
+}
+animateExplosion();
+
+// --- Background Music ---
+let music = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"); 
+music.loop = true;
+music.volume = 0.4;
+
+function toggleMusic(){
+  if(music.paused) music.play();
+  else music.pause();
+}
+
+// --- Game variables ---
+let clicks=0, timeLeft=0, timer, gameRunning=false, timerStarted=false;
+let bestScore = parseInt(localStorage.getItem("bestClickScore")) || 0;
+document.getElementById("bestScore").textContent = bestScore;
+
+function startGame(){
+  let chosenTime=parseFloat(document.getElementById("timeInput").value);
+  if(isNaN(chosenTime) || chosenTime<=0 || chosenTime>10000){
+    alert("Please choose a valid time between 1 and 10000 seconds");
+    return;
+  }
+  clicks=0;
+  timeLeft=chosenTime;
+  document.getElementById("clicks").textContent=clicks;
+  document.getElementById("timeLeft").textContent=timeLeft.toFixed(2);
+  document.getElementById("setup").style.display="none";
+  document.getElementById("result").innerHTML="";
+  document.getElementById("game").style.display="block";
+  gameRunning=true;
+  timerStarted=false;
+}
+
+// --- Click anywhere ---
+document.body.addEventListener("click",(e)=>{
+  if(gameRunning){
+    countClick(e.clientX, e.clientY);
+  }
+});
+
+function countClick(x,y){
+  clicks++;
+  document.getElementById("clicks").textContent=clicks;
+  createExplosion(x,y);
+
+  if(!timerStarted){
+    timerStarted = true;
+    timer = setInterval(()=>{
+      timeLeft -= 0.01;
+      if(timeLeft<=0){
+        timeLeft = 0;
+        endGame();
+      }
+      document.getElementById("timeLeft").textContent=timeLeft.toFixed(2);
+    },10);
+  }
+}
+
+function endGame(){
+  clearInterval(timer);
+  gameRunning=false;
+  document.getElementById("game").style.display="none";
+
+  const chosenTime = parseFloat(document.getElementById("timeInput").value);
+  const cps = clicks / chosenTime; // clicks per second
+
+  // דירוג חיה
+  let rank = "", img = "";
+  if (cps < 2) {
+    rank = "🐢 Turtle Speed!";
+    img = "https://upload.wikimedia.org/wikipedia/commons/5/5e/Turtle_icon.png";
+  } else if (cps < 5) {
+    rank = "🐇 Bunny Speed!";
+    img = "https://upload.wikimedia.org/wikipedia/commons/7/7b/Rabbit-icon.png";
+  } else if (cps < 10) {
+    rank = "🦅 Eagle Speed!";
+    img = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Eagle_icon.png";
+  } else {
+    rank = "🐆 Cheetah Speed!";
+    img = "https://upload.wikimedia.org/wikipedia/commons/4/4e/Cheetah-icon.png";
+  }
+
+  document.getElementById("result").innerHTML=
+    `<h2>⏱️ Time's up!</h2>
+     <p>You clicked ${clicks} times in ${chosenTime} seconds!</p>
+     <h3>${rank}</h3>
+     <img id="animalImg" src="${img}" alt="rank">
+     <br><button class="btn" onclick="restart()">Play Again</button>`;
+
+  if(clicks>bestScore){
+    bestScore = clicks;
+    localStorage.setItem("bestClickScore", bestScore);
+    document.getElementById("bestScore").textContent = bestScore;
+    alert("🎉 New high score!");
+  }
+}
+
+function restart(){
+  document.getElementById("setup").style.display="block";
+  document.getElementById("result").innerHTML="";
+}
+</script>
+
+</body>
+</html>
