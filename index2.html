@@ -88,8 +88,8 @@ function shoot(){ const now=Date.now(); if(now-lastShootTime>shootDelay){bullets
 
 // ===== Meteor =====
 function spawnMeteor(){
-  let size = 50 + Math.random()*20; // גדולים
-  let speed = 2; // מהירות קבועה
+  let size = 50 + Math.random()*20;
+  let speed = 2;
   enemies.push({x:Math.random()*(canvas.width-size),y:-size,width:size,height:size,speed:speed,particles:[]});
 }
 
@@ -129,12 +129,12 @@ function update(){
 
   stars.forEach(s=>{s.y+=s.speed;if(s.y>canvas.height)s.y=0;});
 
-  // Spawn meteor לפי רמה (רק כמות)
+  // Spawn meteor לפי רמה
   let now=Date.now();
-  const minMeteorsPerSecond = 0.2; // רמה 1 = קל מאוד
-  const maxMeteorsPerSecond = 5;   // רמה 100
+  const minMeteorsPerSecond = 0.2;
+  const maxMeteorsPerSecond = 5;
   let meteorsPerSecond = minMeteorsPerSecond + (level-1)*(maxMeteorsPerSecond - minMeteorsPerSecond)/99;
-  meteorsPerSecond *= playerSpeed/5; // מהירות משפיעה מעט
+  meteorsPerSecond *= playerSpeed/5;
   let spawnRate = 1000 / meteorsPerSecond;
   if(now-lastEnemySpawn>spawnRate){spawnMeteor(); lastEnemySpawn=now;}
 
@@ -177,26 +177,14 @@ const overlay=document.getElementById('overlay');
 const overlayInput=document.getElementById('overlayInput');
 const overlayTitle=document.getElementById('overlayTitle');
 
-document.getElementById('startBtn').onclick=()=>{started=true; paused=false; document.getElementById('startBtn').style.display='none';};
+document.getElementById('startBtn').onclick=()=>{started=true; paused=false; document.getElementById('startBtn').style.display='none'; audio.play();};
 document.getElementById('pauseBtn').onclick=()=>{paused=!paused;};
 document.getElementById('restartBtn').onclick=()=>{restartGame();};
 document.getElementById('restartFromOver').onclick=()=>{document.getElementById('gameOver').style.display='none'; restartGame();};
 
-document.getElementById('levelBtn').onclick=()=>{
-  paused=true; overlay.style.display='block';
-  overlayTitle.innerText='בחר רמה (1-100)';
-  overlayInput.value=level;
-};
-document.getElementById('speedBtn').onclick=()=>{
-  paused=true; overlay.style.display='block';
-  overlayTitle.innerText='בחר מהירות (1-10)';
-  overlayInput.value=player.speed;
-};
-document.getElementById('overlayClose').onclick=()=>{
-  if(overlayTitle.innerText.includes('רמה')) level=parseInt(overlayInput.value)||1;
-  else player.speed=parseInt(overlayInput.value)||5;
-  overlay.style.display='none'; paused=false; saveGame();
-};
+document.getElementById('levelBtn').onclick=()=>{paused=true; overlay.style.display='block'; overlayTitle.innerText='בחר רמה (1-100)'; overlayInput.value=level;};
+document.getElementById('speedBtn').onclick=()=>{paused=true; overlay.style.display='block'; overlayTitle.innerText='בחר מהירות (1-10)'; overlayInput.value=player.speed;};
+document.getElementById('overlayClose').onclick=()=>{if(overlayTitle.innerText.includes('רמה')) level=parseInt(overlayInput.value)||1; else player.speed=parseInt(overlayInput.value)||5; overlay.style.display='none'; paused=false; saveGame();};
 
 // ===== Joystick & Fire =====
 const joystick=document.getElementById('joystick'); 
@@ -213,6 +201,10 @@ setInterval(updatePlayerMovement,16);
 function saveGame(){localStorage.setItem('score',score); localStorage.setItem('level',level); localStorage.setItem('playerSpeed',player.speed);}
 function restartGame(){score=0; bullets=[]; enemies=[]; explosions=[]; player.x=canvas.width/2-30; player.y=canvas.height-100; paused=false; saveGame();}
 
+// ===== Music =====
+const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+audio.loop = true;
+audio.volume = 0.5;
 </script>
 </body>
 </html>
