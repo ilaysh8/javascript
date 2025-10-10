@@ -5,22 +5,71 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>G23</title>
 <style>
-  :root{--neon:#00f3ff;--dark:#001220;--panel:#02182a}
-  html,body{height:100%;margin:0;padding:0;font-family:Arial, Helvetica, sans-serif;background:#000;color:#fff;overflow:auto;}
-  body{
-    background-image:url('A_digital_image_features_an_abstract_cosmic_backgr.png');
-    background-size:cover;background-position:center;
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#000;
+    color:#fff;
+    overflow:hidden;
   }
 
-  canvas#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  canvas#bg {
+    position: fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    pointer-events:none;
+  }
 
-  #menu{position:relative;z-index:2;height:100vh;display:flex;align-items:center;justify-content:center}
-  .menu-box{background:rgba(0,0,0,0.45);border:2px solid rgba(0,255,255,0.12);padding:36px;border-radius:16px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
-  h1{margin:0 0 18px 0;font-size:42px;text-shadow:0 0 18px rgba(0,200,255,0.12)}
-  .btn{display:inline-block;margin:10px;padding:18px 44px;font-size:20px;font-weight:700;border-radius:12px;border:none;cursor:pointer;transition:transform .18s,box-shadow .18s}
-  .btn:active{transform:scale(.98)}
-  #spaceBtn{background:linear-gradient(135deg,#7aeaff,#00a3ff);color:#000}
-  #clickBtnMenu{background:linear-gradient(135deg,#ffd86b,#ff7a00);color:#000}
+  /* 🎮 תפריט הצד */
+  #menu {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .game-btn {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 10, 20, 0.7);
+    border: 3px solid rgba(0,255,255,0.4);
+    border-radius: 20px;
+    padding: 16px 22px;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 0 25px rgba(0,255,255,0.2);
+    backdrop-filter: blur(10px);
+    width: 250px;
+  }
+
+  .game-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 30px rgba(0,255,255,0.5);
+  }
+
+  .game-btn img {
+    width: 80px;
+    height: 80px;
+    border-radius: 14px;
+    margin-right: 14px;
+    object-fit: cover;
+    box-shadow: 0 0 14px rgba(0,255,255,0.2);
+  }
+
+  .game-btn span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00eaff;
+    text-shadow: 0 0 10px rgba(0,255,255,0.4);
+  }
 
   /* account modal */
   .auth-modal {
@@ -38,33 +87,48 @@
     border-radius: 16px;
     border: 2px solid rgba(0,243,255,0.25);
     box-shadow: 0 0 40px rgba(0,255,255,0.25);
-    text-align:center;
+    text-align: center;
   }
   .auth-panel input {
-    display:block;
-    margin:8px auto;
-    padding:10px;
-    border-radius:8px;
-    border:none;
-    width:200px;
+    display: block;
+    margin: 8px auto;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    width: 200px;
   }
   .auth-panel button {
-    margin-top:10px;
-    padding:10px 16px;
-    border:none;
-    border-radius:8px;
-    background:linear-gradient(45deg,#00ffcc,#00ccff);
-    font-weight:700;
-    color:#000;
-    cursor:pointer;
+    margin-top: 10px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg,#00ffcc,#00ccff);
+    font-weight: 700;
+    color: #000;
+    cursor: pointer;
   }
-  .auth-panel h2 { color: var(--neon); margin-top:0; }
+  .auth-panel h2 { color: #00f3ff; margin-top: 0; }
   .error { color: #ff8080; min-height: 20px; }
 
-  @media (max-width:520px){
-    .menu-box{padding:18px}
-    h1{font-size:26px}
-    .btn{padding:12px 18px;font-size:15px}
+  #musicToggle {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 4;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(45deg,#00ffcc,#00ccff);
+    font-weight: 700;
+    color: #000;
+    cursor: pointer;
+  }
+  #signature {
+    position: fixed;
+    bottom: 10px;
+    left: 12px;
+    z-index: 4;
+    color: rgba(255,255,255,0.7);
   }
 </style>
 </head>
@@ -72,17 +136,22 @@
 
 <canvas id="bg"></canvas>
 
-<div id="menu" aria-hidden="false">
-  <div class="menu-box">
-    <h1>Select Game</h1>
-    <button id="spaceBtn" class="btn">Space Game 🚀</button>
-    <button id="clickBtnMenu" class="btn">Click Challenge 🖱️</button>
+<!-- 🎮 תפריט המשחקים -->
+<div id="menu">
+  <div class="game-btn" id="spaceBtn">
+    <img src="https://pixabay.com/get/gd7caa5041215262fceb3e3cf0c8513c162f915427c077dca42ca29070e42e3b497bb35aaf333e745b7a4ba4a705250a6d42ce767bfde9afe4d16be0d198d5cc7ba4c59db1774e0f421ae6f2b93a3b24c_640.png" alt="Space Game">
+    <span>Space Game 🚀</span>
+  </div>
+    <div class="game-btn" id="tiktaktu">
+    <img src="https://pixabay.com/get/gf4580b7510e668a1c68f1775a19e44e8d5d8cb47392fc8773e60700a161b3edfd804ca0f6166e4909b71ac34dd3a3df1130ca0751f3a4cd3cf09f99c9ea6b64d36c6b5c0850295651c7bed65055ece36_640.png" alt="Tik Tak Tu">
+    <span>Tik Tak Tu 🚀</span>
+  </div>
+
+  <div class="game-btn" id="clickBtnMenu">
+    <img src="https://pixabay.com/get/g9150e555a73b4e526d46510482185270d8363ba124f7693fb795ca5538a26f4f58f7d53a69d7e0088900bd8127146bc9d1262ac83c61faf377f3970b41785e16ad1e986e47bbfccbde2efefa71d8132e_640.png" alt="Click Game">
+    <span>Click Challenge 🖱️</span>
   </div>
 </div>
-
-<!-- music toggle + signature -->
-<button id="musicToggle" style="position:fixed;top:12px;left:12px;z-index:4;padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(45deg,#00ffcc,#00ccff);font-weight:700;color:#000;cursor:pointer">🎵 Play</button>
-<div id="signature" style="position:fixed;bottom:10px;left:12px;z-index:4;color:rgba(255,255,255,0.7)">MADE BY ILAYS</div>
 
 <!-- account creation modal -->
 <div id="authModal" class="auth-modal">
@@ -96,50 +165,64 @@
   </div>
 </div>
 
+<!-- music + signature -->
+<button id="musicToggle">🎵 Play</button>
+<div id="signature">MADE BY ILAYS</div>
+
 <script>
-/* ===== background stars ===== */
+/* ===== רקע חלל דינמי ===== */
 const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
 function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
 resize(); addEventListener('resize', resize);
-const stars=[];
-for(let i=0;i<200;i++){
-  stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.6+0.5,speed:Math.random()*0.35+0.03,alpha:Math.random()*0.6+0.3});
+
+const stars = [];
+for(let i=0;i<300;i++){
+  stars.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*1.5+0.5,
+    speed: Math.random()*0.3+0.05,
+    alpha: Math.random()*0.5+0.2
+  });
 }
+
 function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='rgba(0,0,0,0.3)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
   for(const s of stars){
-    ctx.globalAlpha=s.alpha;
-    ctx.beginPath(); ctx.fillStyle='#fff'; ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
-    s.y+=s.speed;
-    if(s.y>canvas.height+10){s.y=-10; s.x=Math.random()*canvas.width;}
-    s.alpha+= (Math.random()-0.5)*0.06;
-    s.alpha=Math.max(.15,Math.min(1,s.alpha));
+    ctx.globalAlpha = s.alpha;
+    ctx.beginPath();
+    ctx.fillStyle='#fff';
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
+    s.y += s.speed;
+    if(s.y>canvas.height+5){ s.y=-5; s.x=Math.random()*canvas.width; }
+    s.alpha += (Math.random()-0.5)*0.03;
+    s.alpha = Math.max(0.2, Math.min(1, s.alpha));
   }
   ctx.globalAlpha=1;
   requestAnimationFrame(draw);
 }
 draw();
 
-/* ===== music ===== */
+/* ===== מוזיקה ===== */
 const MUSIC_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-const audio = new Audio(MUSIC_URL); audio.loop = true; audio.volume = 0.36;
+const audio = new Audio(MUSIC_URL);
+audio.loop = true;
+audio.volume = 0.36;
 const musicToggle = document.getElementById('musicToggle');
 musicToggle.onclick = ()=>{
-  if(audio.paused){
-    audio.play().catch(()=>{});
-    musicToggle.textContent="🔊 On";
-  } else {
-    audio.pause();
-    musicToggle.textContent="🎵 Play";
-  }
+  if(audio.paused){ audio.play().catch(()=>{}); musicToggle.textContent="🔊 On"; }
+  else { audio.pause(); musicToggle.textContent="🎵 Play"; }
 };
 
-/* ===== navigation ===== */
+/* ===== ניווט משחקים ===== */
 document.getElementById('spaceBtn').onclick=()=>{ window.location.href='index2.html'; }
 document.getElementById('clickBtnMenu').onclick=()=>{ window.location.href='game2.html'; }
+document.getElementById('tiktaktu').onclick=()=>{ window.location.href='game3.html'; }
 
-/* ===== account creation ===== */
+/* ===== יצירת חשבון ===== */
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById('createAccountBtn');
   const usernameInput = document.getElementById('username');
@@ -148,10 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageDiv = document.getElementById('authMessage');
   const modal = document.getElementById('authModal');
 
-  if(localStorage.getItem('accountCreated')){
-    modal.style.display='none';
-    return;
-  }
+  if(localStorage.getItem('accountCreated')){ modal.style.display='none'; return; }
 
   btn.addEventListener('click',()=>{
     const u=usernameInput.value.trim();
@@ -159,7 +239,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const p2=passwordConfirmInput.value;
     if(!u||!p||!p2){ messageDiv.textContent='Please fill all fields'; return; }
     if(p!==p2){ messageDiv.textContent='Passwords do not match'; return; }
-
     const userObj={username:u,password:p};
     localStorage.setItem('accountData',JSON.stringify(userObj));
     localStorage.setItem('accountCreated','true');
