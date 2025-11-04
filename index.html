@@ -38,14 +38,14 @@ body {
 
 #gameContainer {position:relative; width:100vw; height:100vh; overflow:hidden; z-index:2;}
 #woodBoard {position:absolute; bottom:100px; width:200%; height:80px; background:url('https://pixabay.com/get/g2a218b15ca4261f09ca100ad35fa3b59e873b978a0544cab1000ed869b1e088ab909ff51f70fa42326a811b5d9c93e77ca4e982f354ff7765f0d507d24ba429c_1280.jpg') repeat-x; background-size:contain; box-shadow:0 25px 40px rgba(0,0,0,0.6); z-index:4;}
-#player {position:absolute; bottom:150px; left:150px; width:160px; height:160px; background-image:url('file:///C:/Users/ilays/Downloads/ChatGPT%20Image%20Oct%2013,%202025,%2011_58_57%20AM-fotor-bg-remover-20251013115947.png'); background-size:contain; background-repeat:no-repeat; transform:scaleX(-1); transition:transform 0.5s ease; z-index:6;}
+#player {position:absolute; bottom:150px; left:150px; width:160px; height:160px; background-image:url('resources/capi.png'); background-size:contain; background-repeat:no-repeat; transform:scaleX(-1); transition:transform 0.5s ease; z-index:6;}
 .jump {animation: jumpAnim 0.8s forwards;}
 @keyframes jumpAnim {0%{transform:translateY(0) scaleX(-1);}40%{transform:translateY(-270px) scaleX(-1);}60%{transform:translateY(-270px) scaleX(-1);}100%{transform:translateY(0) scaleX(-1);}}
-.banana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('file:///C:/Users/ilays/Downloads/cute-illustration-of-banana-peel-on-isolated-background-vector-fotor-bg-remover-20251010192530.png'); background-size:contain; background-repeat:no-repeat; background-position:center; transform:rotate(5deg); z-index:5;}
+.banana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/cute-illustration-of-banana-peel-on-isolated-background-vector-fotor-bg-remover-20251010192530.png'); background-size:contain; background-repeat:no-repeat; background-position:center; transform:rotate(5deg); z-index:5;}
 .bowl, .bowlEmpty {position:absolute; width:120px; height:100px; background-size:contain; background-repeat:no-repeat; z-index:5;}
-.bowl {background-image:url('file:///C:/Users/ilays/Downloads/dog-bowl-icon-dog-food-and-water-bowl-isolated-on-white-background-cartoon-illustration-cat-and-dog-food-cartoon-pet-feed-containers-or-packs-home-animals-wet-and-dry-meal-round-feeders-vector-fotor-bg-remover-2025.png');}
-.bowlEmpty {background-image:url('file:///C:/Users/ilays/Downloads/red-empty-dog-bowl-isolated-png-fotor-bg-remover-2025101020259.png'); transition:transform 0.4s ease-in-out, opacity 0.4s ease-in-out;}
-.puddle {position:absolute; bottom:150px; width:120px; height:60px; background-image:url('file:///C:/Users/ilays/Downloads/puddle.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
+.bowl {background-image:url('resources/dog-bowl-icon-dog-food-and-water-bowl-isolated-on-white-background-cartoon-illustration-cat-and-dog-food-cartoon-pet-feed-containers-or-packs-home-animals-wet-and-dry-meal-round-feeders-vector-fotor-bg-remover-2025.png');}
+.bowlEmpty {background-image:url('resoruces/red-empty-dog-bowl-isolated-png-fotor-bg-remover-2025101020259.png'); transition:transform 0.4s ease-in-out, opacity 0.4s ease-in-out;}
+.puddle {position:absolute; bottom:150px; width:120px; height:60px; background-image:url('resources/puddle.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
 #score {position:absolute; top:20px; left:20px; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
 #bowlCounter {position:absolute; top:60px; left:20px; display:flex; align-items:center; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
 #bowlCounter img {width:50px; height:50px; margin-right:10px;}
