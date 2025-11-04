@@ -41,10 +41,10 @@ body {
 #player {position:absolute; bottom:150px; left:150px; width:160px; height:160px; background-image:url('resources/capi.png'); background-size:contain; background-repeat:no-repeat; transform:scaleX(-1); transition:transform 0.5s ease; z-index:6;}
 .jump {animation: jumpAnim 0.8s forwards;}
 @keyframes jumpAnim {0%{transform:translateY(0) scaleX(-1);}40%{transform:translateY(-270px) scaleX(-1);}60%{transform:translateY(-270px) scaleX(-1);}100%{transform:translateY(0) scaleX(-1);}}
-.banana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/cute-illustration-of-banana-peel-on-isolated-background-vector-fotor-bg-remover-20251010192530.png'); background-size:contain; background-repeat:no-repeat; background-position:center; transform:rotate(5deg); z-index:5;}
+.banana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/banana.png'); background-size:contain; background-repeat:no-repeat; background-position:center; transform:rotate(5deg); z-index:5;}
 .bowl, .bowlEmpty {position:absolute; width:120px; height:100px; background-size:contain; background-repeat:no-repeat; z-index:5;}
-.bowl {background-image:url('resources/dog-bowl-icon-dog-food-and-water-bowl-isolated-on-white-background-cartoon-illustration-cat-and-dog-food-cartoon-pet-feed-containers-or-packs-home-animals-wet-and-dry-meal-round-feeders-vector-fotor-bg-remover-2025.png');}
-.bowlEmpty {background-image:url('resoruces/red-empty-dog-bowl-isolated-png-fotor-bg-remover-2025101020259.png'); transition:transform 0.4s ease-in-out, opacity 0.4s ease-in-out;}
+.bowl {background-image:url('resources/dog-bowl.png');}
+.bowlEmpty {background-image:url('resoruces/empty-dog-bowl.png'); transition:transform 0.4s ease-in-out, opacity 0.4s ease-in-out;}
 .puddle {position:absolute; bottom:150px; width:120px; height:60px; background-image:url('resources/puddle.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
 #score {position:absolute; top:20px; left:20px; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
 #bowlCounter {position:absolute; top:60px; left:20px; display:flex; align-items:center; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
@@ -55,8 +55,8 @@ body {
 #restartBtn {padding:18px 36px; background:linear-gradient(135deg, #ffd700, #ffa500); border:none; border-radius:12px; cursor:pointer; font-size:24px; font-weight:bold; box-shadow:0 4px 15px rgba(255,215,0,0.6); transition:all 0.3s ease; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.3);}
 #restartBtn:hover {background:linear-gradient(135deg, #ffe066, #ffbc33); box-shadow:0 6px 20px rgba(255,255,0,0.9); transform:scale(1.05) translateY(-2px);}
 
-#speedBanana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('file:///C:/Users/ilays/Downloads/images%20(1)-fotor-bg-remover-2025101518538.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
-
+#speedBanana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/banana.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
+ 
 #creatorZoneBtn {
   position:absolute; top:100px; right:20px; padding:14px 28px; background:linear-gradient(135deg, #ff4d4d, #cc0000); border:none; border-radius:10px; cursor:pointer; font-size:20px; font-weight:700; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.4); box-shadow:0 4px 15px rgba(255,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.3); transition:all 0.3s ease; z-index:7; display:none;
 }
@@ -180,7 +180,7 @@ body {
   <div id="laserGun"></div>
   <div id="score">Score: 0</div>
   <div id="bowlCounter">
-    <img src="file:///C:/Users/ilays/Downloads/red-empty-dog-bowl-isolated-png-fotor-bg-remover-2025101020259.png" alt="bowl">
+    <img src="resources/empty-dog-bowl.png" alt="bowl">
     <span id="bowlCount">0</span>
   </div>
 
