@@ -35,7 +35,6 @@ body {
   animation: fadeInOut 3s ease-in-out forwards;
 }
 @keyframes fadeInOut { 0% { opacity:0; } 20% { opacity:1; } 80% { opacity:1; } 100% { opacity:0; } }
-
 #gameContainer {position:relative; width:100vw; height:100vh; overflow:hidden; z-index:2;}
 #woodBoard {position:absolute; bottom:100px; width:200%; height:80px; background:url('https://pixabay.com/get/g2a218b15ca4261f09ca100ad35fa3b59e873b978a0544cab1000ed869b1e088ab909ff51f70fa42326a811b5d9c93e77ca4e982f354ff7765f0d507d24ba429c_1280.jpg') repeat-x; background-size:contain; box-shadow:0 25px 40px rgba(0,0,0,0.6); z-index:4;}
 #player {position:absolute; bottom:150px; left:150px; width:160px; height:160px; background-image:url('resources/capi.png'); background-size:contain; background-repeat:no-repeat; transform:scaleX(-1); transition:transform 0.5s ease; z-index:6;}
@@ -44,7 +43,7 @@ body {
 .banana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/banana.png'); background-size:contain; background-repeat:no-repeat; background-position:center; transform:rotate(5deg); z-index:5;}
 .bowl, .bowlEmpty {position:absolute; width:120px; height:100px; background-size:contain; background-repeat:no-repeat; z-index:5;}
 .bowl {background-image:url('resources/dog-bowl.png');}
-.bowlEmpty {background-image:url('resoruces/empty-dog-bowl.png'); transition:transform 0.4s ease-in-out, opacity 0.4s ease-in-out;}
+.bowlEmpty {background-image:url('resources/empty-dog-bowl.png'); transition:transform 0.4s ease-in-out, opacity 0.4s ease-in-out;}
 .puddle {position:absolute; bottom:150px; width:120px; height:60px; background-image:url('resources/puddle.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
 #score {position:absolute; top:20px; left:20px; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
 #bowlCounter {position:absolute; top:60px; left:20px; display:flex; align-items:center; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
@@ -54,15 +53,12 @@ body {
 @keyframes bounce {0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
 #restartBtn {padding:18px 36px; background:linear-gradient(135deg, #ffd700, #ffa500); border:none; border-radius:12px; cursor:pointer; font-size:24px; font-weight:bold; box-shadow:0 4px 15px rgba(255,215,0,0.6); transition:all 0.3s ease; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.3);}
 #restartBtn:hover {background:linear-gradient(135deg, #ffe066, #ffbc33); box-shadow:0 6px 20px rgba(255,255,0,0.9); transform:scale(1.05) translateY(-2px);}
-
 #speedBanana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/banana.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
- 
 #creatorZoneBtn {
   position:absolute; top:100px; right:20px; padding:14px 28px; background:linear-gradient(135deg, #ff4d4d, #cc0000); border:none; border-radius:10px; cursor:pointer; font-size:20px; font-weight:700; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.4); box-shadow:0 4px 15px rgba(255,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.3); transition:all 0.3s ease; z-index:7; display:none;
 }
 #creatorZoneBtn:hover {background:linear-gradient(135deg, #ff6666, #e60000); transform:scale(1.08) translateY(-3px); box-shadow:0 6px 20px rgba(255,0,0,0.7), inset 0 1px 5px rgba(255,255,255,0.5);}
 #creatorZoneBtn:active {transform:scale(0.98) translateY(0); box-shadow:0 2px 10px rgba(255,0,0,0.4);}
-
 #creatorZoneMenu {
   position:absolute; top:150px; right:20px; background:linear-gradient(to bottom, rgba(30,30,30,0.95), rgba(0,0,0,0.9)); border-radius:12px; padding:12px; display:none; z-index:8; box-shadow:0 5px 25px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); width:240px;
 }
@@ -81,7 +77,6 @@ body {
 .teleport-group {display:flex; gap:5px;}
 .teleport-group input {flex:1; margin:0;}
 .teleport-group button {width:60px; padding:8px; font-size:14px;}
-
 /* Leaderboard */
 #leaderboard {
   position: absolute; top:60px; right:20px; background:rgba(0,0,0,0.75); color:white; padding:16px; border-radius:14px; font-size:18px; z-index:7; box-shadow:0 4px 20px rgba(0,0,0,0.5); width:220px; text-align:left; border:1px solid rgba(255,255,255,0.2); display:none;
@@ -90,28 +85,19 @@ body {
 #leaderboard div {margin:6px 0; font-size:17px;}
 #clearLeaderboard {margin-top:12px; padding:8px 14px; background:#e63946; border:none; border-radius:8px; color:white; cursor:pointer; font-size:14px; font-weight:bold; transition:all 0.2s ease;}
 #clearLeaderboard:hover {background:#d00000; transform:scale(1.05);}
-
 #toggleLeaderboardBtn {
   position:absolute; top:20px; right:20px; padding:10px 16px; background:linear-gradient(135deg, #4CAF50, #388E3C); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; font-weight:bold; z-index:8; box-shadow:0 3px 12px rgba(0,0,0,0.4); transition:all 0.3s ease; text-shadow:1px 1px 2px rgba(0,0,0,0.3);
 }
 #toggleLeaderboardBtn:hover {background:linear-gradient(135deg, #66BB6A, #43A047); transform:translateY(-2px) scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.5);}
 #toggleLeaderboardBtn:active {transform:translateY(0) scale(0.98);}
-
 /* Laser Gun */
 #laserGun {
-  position: absolute; 
-  bottom: 195px; 
-  left: 210px; 
-  width: 70px; 
-  height: 50px;
+  position: absolute; bottom: 195px; left: 210px; width: 70px; height: 50px;
   background: url('https://cdn-icons-png.flaticon.com/512/2909/2909556.png') center/contain no-repeat;
-  z-index: 7; 
-  display: none; 
-  transform: rotate(-25deg);
+  z-index: 7; display: none; transform: rotate(-25deg);
   filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
   transition: transform 0.1s ease;
 }
-
 /* UFO */
 .ufo {
   position: absolute; width: 120px; height: 80px; background: url('https://clipart-library.com/images/8T68RMeac.png') center/contain no-repeat;
@@ -119,7 +105,6 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
 /* Laser Beam */
 .laser-beam {
   position: absolute; background: linear-gradient(90deg, #ff0000, #ff9500); height: 6px; width: 0;
@@ -131,7 +116,6 @@ body {
   70% { width: 100%; opacity: 1; }
   100% { width: 100%; opacity: 0; }
 }
-
 /* Enemy Laser */
 .enemy-laser {
   position: absolute; width: 5px; height: 0; background: #00ff00; box-shadow: 0 0 15px #00ff00;
@@ -141,7 +125,6 @@ body {
   0% { height: 0; opacity: 1; }
   100% { height: 100%; opacity: 0.7; }
 }
-
 /* Hearts */
 #hearts {
   position: absolute; top: 20px; right: 20px; display: flex; gap: 8px; z-index: 7; display: none;
@@ -155,7 +138,6 @@ body {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.15); }
 }
-
 /* Stage Message */
 #stageMessage {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -166,6 +148,50 @@ body {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }
   50% { transform: translate(-50%, -50%) scale(1.1); }
 }
+
+/* כפתור קפיצה שקוף – רק אייקון חץ לבן */
+#jumpButton {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 80px;
+  height: 80px;
+  background: transparent; /* שקוף! */
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  z-index: 15;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: none; /* מופיע רק בטלפון */
+}
+
+#jumpButton::before {}
+
+/* אפקט לחיצה */
+#jumpButton:active {
+  transform: scale(0.88);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* מופיע רק בטלפון */
+@media (max-width: 768px) {
+  #jumpButton {
+    display: flex;
+  }
+}
+
+/* אם תרצה להראות גם במחשב – הסר את ה-display:none */
 </style>
 </head>
 <body>
@@ -183,17 +209,13 @@ body {
     <img src="resources/empty-dog-bowl.png" alt="bowl">
     <span id="bowlCount">0</span>
   </div>
-
   <div id="hearts"></div>
   <div id="stageMessage"></div>
-
   <button id="toggleLeaderboardBtn">Leaderboard</button>
-
   <div id="gameOverScreen">
     <div>Game Over!</div>
     <button id="restartBtn">Restart</button>
   </div>
-
   <button id="creatorZoneBtn">Creator Zone</button>
   <div id="creatorZoneMenu">
     <div class="teleport-group">
@@ -219,7 +241,6 @@ body {
     <button onclick="setPlayerSize(1)">Size: Normal</button>
     <button onclick="setPlayerSize(1.5)">Size: Large</button>
   </div>
-
   <div id="leaderboard">
     <div class="title">Leaderboard</div>
     <div id="highScoreDisplay">High Score: 0</div>
@@ -229,8 +250,17 @@ body {
   </div>
 </div>
 
+<!-- כפתור קפיצה שקוף -->
+<div id="jumpButton"></div>
+
 <script>
-// === Leaderboard System ===
+// (כל הסקריפט נשאר בדיוק כמו שהיה – רק הכפתור השתנה)
+let bowlInterval, puddleInterval, ufoInterval;
+function clearAllIntervals() {
+  if (bowlInterval) clearInterval(bowlInterval);
+  if (puddleInterval) clearInterval(puddleInterval);
+  if (ufoInterval) clearInterval(ufoInterval);
+}
 const STORAGE_KEY = 'capygame_leaderboard';
 function loadLeaderboard() {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -238,7 +268,6 @@ function loadLeaderboard() {
 }
 function saveLeaderboard(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 let leaderboard = loadLeaderboard();
-
 function updateLeaderboardDisplay() {
   document.getElementById('highScoreDisplay').textContent = `High Score: ${Math.floor(leaderboard.highScore)}`;
   document.getElementById('totalBowlsDisplay').textContent = `Total Bowls: ${leaderboard.totalBowls}`;
@@ -268,7 +297,6 @@ function toggleLeaderboard() {
 document.getElementById('toggleLeaderboardBtn').addEventListener('click', toggleLeaderboard);
 updateLeaderboardDisplay();
 
-// === Game Start ===
 function startGame(){
   const player = document.getElementById('player');
   const laserGun = document.getElementById('laserGun');
@@ -285,9 +313,10 @@ function startGame(){
   const creatorZoneMenu = document.getElementById('creatorZoneMenu');
   const heartsContainer = document.getElementById('hearts');
   const stageMessage = document.getElementById('stageMessage');
+  const jumpButton = document.getElementById('jumpButton');
 
   let bgOffset=0, boardOffset=0, score=0;
-  let baseSpeed=6, speed=6, jumping=false, bananas=[], bowls=[], puddles=[], ufos = [], playerLasers = [], enemyLasers = [];
+  let baseSpeed=6, speed=6, isJumping=false, bananas=[], bowls=[], puddles=[], ufos = [], playerLasers = [], enemyLasers = [];
   let bowlCount=0, gameOver=false;
   let speedBoostActive=false, scoreMultiplier=1;
   let flyMode=false, invincible=false, playerScale=1;
@@ -309,7 +338,6 @@ function startGame(){
   const stormStage = {name:'storm', top:'#4B5EAA', bottom:'#2A3B66'};
   const stageCount = stages.length;
 
-  // === Hearts ===
   function updateHearts() {
     heartsContainer.innerHTML = '';
     for (let i = 0; i < lives; i++) {
@@ -320,11 +348,10 @@ function startGame(){
     heartsContainer.style.display = ufoStageActive ? 'flex' : 'none';
   }
 
-  // === UFO Stage – כל 600 נקודות, נמשך 500 נקודות (600–1099) ===
   function isInUFOStage() {
     const s = Math.floor(score);
     const local = s % 1000;
-    return local >= 600 || (local < 100 && s >= 600); // 600–1099
+    return local >= 600 || (local < 100 && s >= 600);
   }
 
   function startUFOStage() {
@@ -350,7 +377,6 @@ function startGame(){
     ufos = [];
   }
 
-  // === Storm System ===
   function triggerStorm() {
     if (stormActive || gameOver) return;
     stormActive = true; isStorm = true;
@@ -359,12 +385,10 @@ function startGame(){
     rain.style.display = 'block';
     stormMessage.style.display = 'block';
     stormMessage.innerHTML = 'A storm begins!';
-
     const lightningInterval = setInterval(() => {
       if (!stormActive || gameOver) { clearInterval(lightningInterval); return; }
       flashLightning();
     }, Math.random() * 3000 + 1000);
-
     setTimeout(() => { if (!gameOver) endStorm(); clearInterval(lightningInterval); }, Math.random() * 4000 + 8000);
   }
 
@@ -390,7 +414,6 @@ function startGame(){
     }
   }
 
-  // === Laser Gun & UFO System ===
   function updateLaserGun() {
     const currentScore = Math.floor(score);
     if (currentScore >= 600 && !laserEnabled && ufoStageActive) {
@@ -403,19 +426,15 @@ function startGame(){
     }
   }
 
-  // === ירי לייזר ===
   function shootLaser(e) {
     if (!laserEnabled || gameOver || !ufoStageActive) return;
-
     const gunRect = laserGun.getBoundingClientRect();
     const startX = gunRect.left + gunRect.width / 2;
     const startY = gunRect.top + gunRect.height / 2;
     const endX = e.clientX;
     const endY = e.clientY;
-
     const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
     const distance = Math.hypot(endX - startX, endY - startY);
-
     const beam = document.createElement('div');
     beam.className = 'laser-beam';
     beam.style.position = 'absolute';
@@ -428,41 +447,31 @@ function startGame(){
     beam.style.transform = `rotate(${angle}deg)`;
     beam.style.transformOrigin = 'left center';
     beam.style.zIndex = '6';
-
     document.getElementById('gameContainer').appendChild(beam);
-
     setTimeout(() => {
       const beamRect = beam.getBoundingClientRect();
-
       ufos = ufos.filter((ufo, i) => {
         const ufoRect = ufo.getBoundingClientRect();
-
         const hit = (
           beamRect.left < ufoRect.right &&
           beamRect.right > ufoRect.left &&
           beamRect.top < ufoRect.bottom &&
           beamRect.bottom > ufoRect.top
         );
-
         if (hit) {
-          // פיצוץ רק כשפוגעים!
           ufo.style.background = 'radial-gradient(circle, #ff9500, #ff0000, transparent)';
           ufo.style.boxShadow = '0 0 50px #ff0000';
           ufo.style.transition = 'all 0.3s ease-out';
           ufo.style.transform = 'scale(1.6) rotate(20deg)';
-
           setTimeout(() => ufo.remove(), 300);
-
           score += 50;
           scoreEl.textContent = 'Score: ' + Math.floor(score);
           return false;
         }
         return true;
       });
-
       beam.remove();
     }, 350);
-
     setTimeout(() => beam.remove(), 400);
   }
 
@@ -474,7 +483,6 @@ function startGame(){
     ufo.style.bottom = (200 + Math.random() * 300) + 'px';
     document.getElementById('gameContainer').appendChild(ufo);
     ufos.push(ufo);
-
     const shootInterval = setInterval(() => {
       if (!ufo.parentElement || gameOver || !ufoStageActive) {
         clearInterval(shootInterval);
@@ -491,7 +499,6 @@ function startGame(){
     const startY = ur.bottom;
     const endY = pr.top + pr.height / 2;
     const distance = endY - startY;
-
     const laser = document.createElement('div');
     laser.classList.add('enemy-laser');
     laser.style.left = (startX - 2.5) + 'px';
@@ -499,12 +506,10 @@ function startGame(){
     laser.style.height = distance + 'px';
     document.getElementById('gameContainer').appendChild(laser);
     enemyLasers.push(laser);
-
     setTimeout(() => {
       if (laser.parentElement) laser.remove();
       enemyLasers = enemyLasers.filter(l => l !== laser);
     }, 700);
-
     setTimeout(() => {
       if (gameOver || !ufoStageActive) return;
       const lr = laser.getBoundingClientRect();
@@ -517,13 +522,11 @@ function startGame(){
     }, 350);
   }
 
-  // === Creator Zone Functions ===
   window.setGameSpeed = function(m) {
     speed = baseSpeed * m; scoreMultiplier = m;
     creatorZoneMenu.style.display = 'none';
     alert(`Speed set to: ${m === 0.5 ? 'Slow' : m === 1 ? 'Normal' : m === 2 ? 'Fast' : 'Very Fast'}`);
   };
-
   window.teleportToScore = function(target) {
     score = target;
     scoreEl.textContent = 'Score: ' + Math.floor(score);
@@ -532,7 +535,6 @@ function startGame(){
     creatorZoneMenu.style.display = 'none';
     alert(`Teleported to ${target} points!`);
   };
-
   window.teleportToCustomScore = function() {
     const input = document.getElementById('teleportScoreInput');
     const target = parseInt(input.value);
@@ -543,14 +545,12 @@ function startGame(){
       alert('Please enter a valid number!');
     }
   };
-
   window.toggleFlyMode = function() {
     flyMode = !flyMode;
     player.style.bottom = flyMode ? playerY + 'px' : '150px';
     creatorZoneMenu.style.display = 'none';
     alert(flyMode ? 'Fly mode enabled!' : 'Fly mode disabled!');
   };
-
   window.setTimeOfDay = function(time) {
     const stage = time === 'storm' ? stormStage : stages.find(s => s.name === time);
     if (stage) {
@@ -561,19 +561,16 @@ function startGame(){
       alert(`Time set to: ${time.charAt(0).toUpperCase() + time.slice(1)}`);
     }
   };
-
   window.toggleInvincibility = function() {
     invincible = !invincible;
     creatorZoneMenu.style.display = 'none';
     alert(invincible ? 'You are now invincible!' : 'Invincibility disabled');
   };
-
   window.addBowls = function(n) {
     bowlCount += n; bowlCountEl.textContent = bowlCount;
     creatorZoneMenu.style.display = 'none';
     alert(`Added ${n} bowls! Total: ${bowlCount}`);
   };
-
   window.setPlayerSize = function(s) {
     playerScale = s;
     player.style.transform = flyMode ? `scale(${s})` : `scaleX(-${s}) scaleY(${s})`;
@@ -583,9 +580,26 @@ function startGame(){
     alert(`Player size: ${s === 0.5 ? 'Small' : s === 1 ? 'Normal' : 'Large'}`);
   };
 
-  // === Secret Code ===
+  function jump() {
+    if (gameOver || isJumping || flyMode) return;
+    isJumping = true;
+    player.classList.add('jump');
+    setTimeout(() => {
+      player.classList.remove('jump');
+      isJumping = false;
+    }, 800);
+  }
+
   document.addEventListener('keydown', e => {
-    if (gameOver) return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      jump();
+    }
+    if (flyMode) {
+      if (e.code === 'ArrowUp') playerY = Math.min(playerY + 15, innerHeight - 160 * playerScale);
+      if (e.code === 'ArrowDown') playerY = Math.max(playerY - 15, 100);
+      player.style.bottom = playerY + 'px';
+    }
     if (e.key >= '0' && e.key <= '9') {
       const now = Date.now();
       if (now - lastKeyTime > 2000) keySequence = [];
@@ -597,24 +611,22 @@ function startGame(){
         alert('Creator Zone unlocked!');
       }
     }
-    if (e.code === 'Space' && !jumping && !flyMode) {
-      jumping = true; player.classList.add('jump');
-      setTimeout(() => { player.classList.remove('jump'); jumping = false; }, 1000);
-    }
-    if (flyMode) {
-      if (e.code === 'ArrowUp') playerY = Math.min(playerY + 10, innerHeight - 160 * playerScale);
-      if (e.code === 'ArrowDown') playerY = Math.max(playerY - 10, 150);
-      player.style.bottom = playerY + 'px';
-    }
+  });
+
+  jumpButton.addEventListener('touchstart', e => {
+    e.preventDefault();
+    jump();
+  });
+  jumpButton.addEventListener('mousedown', e => {
+    e.preventDefault();
+    jump();
   });
 
   creatorZoneBtn.addEventListener('click', () => {
     creatorZoneMenu.style.display = creatorZoneMenu.style.display === 'block' ? 'none' : 'block';
   });
-
   document.addEventListener('click', shootLaser);
 
-  // === Game Objects ===
   function createBanana() {
     if (gameOver) return;
     const b = document.createElement('div'); b.classList.add('banana');
@@ -669,7 +681,6 @@ function startGame(){
     }, 400);
   }
 
-  // === Sky Update ===
   function hexToRgb(h) { h = h.replace('#',''); return [parseInt(h[0]+h[1],16), parseInt(h[2]+h[3],16), parseInt(h[4]+h[5],16)]; }
   function lerp(a,b,t) { return a + (b-a)*t; }
   function lerpColor(c1,c2,t) { return c1.map((v,i) => Math.round(lerp(v, c2[i], t))); }
@@ -689,7 +700,6 @@ function startGame(){
     sky.style.opacity = (cur.name === 'night' || next.name === 'night') ? '0.95' : '0.92';
   }
 
-  // === Speed Banana ===
   const speedBanana = document.createElement('div'); speedBanana.id = 'speedBanana';
   speedBanana.style.left = '-500px'; speedBanana.style.display = 'none';
   document.getElementById('gameContainer').appendChild(speedBanana);
@@ -708,31 +718,26 @@ function startGame(){
   }
   setInterval(spawnRandomSpeedBanana, 25000);
 
-  // === Game Loop ===
   function gameLoop() {
     if (gameOver) return;
     bgOffset -= speed * 0.3; boardOffset -= speed;
     document.body.style.backgroundPositionX = bgOffset + 'px';
     board.style.backgroundPositionX = boardOffset + 'px';
-
     updateLaserGun();
-
     if (isInUFOStage() && !ufoStageActive) startUFOStage();
     else if (!isInUFOStage() && ufoStageActive) endUFOStage();
 
-    // Bananas
     for (let i = bananas.length - 1; i >= 0; i--) {
       const b = bananas[i]; let left = parseFloat(b.style.left) - speed;
       b.style.left = left + 'px';
       if (left + b.offsetWidth < 0) { b.remove(); bananas.splice(i,1); continue; }
       const pr = player.getBoundingClientRect(), br = b.getBoundingClientRect();
       const hit = {left: br.left+30, right: br.right-30, top: br.top+20, bottom: br.bottom-20};
-      if (pr.left < hit.right && pr.right > hit.left && pr.bottom > hit.top && pr.top < hit.bottom && !jumping && !flyMode && !invincible) {
+      if (pr.left < hit.right && pr.right > hit.left && pr.bottom > hit.top && pr.top < hit.bottom && !isJumping && !flyMode && !invincible) {
         player.style.transform = "rotate(-45deg) scaleX(-1)"; endGame();
       }
     }
 
-    // Bowls
     for (let i = bowls.length - 1; i >= 0; i--) {
       const b = bowls[i]; let left = parseFloat(b.style.left) - speed;
       b.style.left = left + 'px';
@@ -741,30 +746,23 @@ function startGame(){
       if (left + b.offsetWidth < 0) { b.remove(); bowls.splice(i,1); }
     }
 
-    // Puddles
     for (let i = puddles.length - 1; i >= 0; i--) {
       const p = puddles[i]; let left = parseFloat(p.style.left) - speed;
       p.style.left = left + 'px';
       const pr = player.getBoundingClientRect(), prr = p.getBoundingClientRect();
-      if (pr.left < prr.right && pr.right > prr.left && pr.bottom > prr.top && pr.top < prr.bottom && !jumping && !flyMode) {
+      if (pr.left < prr.right && pr.right > prr.left && pr.bottom > prr.top && pr.top < prr.bottom && !isJumping && !flyMode) {
         if (!slowEffect) { slowEffect = true; speed *= 0.5; setTimeout(() => { speed /= 0.5; slowEffect = false; }, 3000); }
       }
       if (left + p.offsetWidth < 0) { p.remove(); puddles.splice(i,1); }
     }
 
-    // UFOs – נעלם בשקט אם יוצא מהמסך
     for (let i = ufos.length - 1; i >= 0; i--) {
       const ufo = ufos[i];
       let left = parseFloat(ufo.style.left) - speed * 0.8;
       ufo.style.left = left + 'px';
-      if (left + ufo.offsetWidth < 0) { 
-        ufo.remove(); 
-        ufos.splice(i,1); 
-        continue; 
-      }
+      if (left + ufo.offsetWidth < 0) { ufo.remove(); ufos.splice(i,1); continue; }
     }
 
-    // Speed Banana
     if (speedBananaActive) {
       let left = parseFloat(speedBanana.style.left) - speed;
       speedBanana.style.left = left + 'px';
@@ -792,39 +790,64 @@ function startGame(){
   }
 
   restartBtn.addEventListener('click', () => {
-    [bananas, bowls, puddles, ufos].forEach(arr => arr.forEach(el => el.remove()));
-    playerLasers.forEach(l => l.remove()); enemyLasers.forEach(l => l.remove());
+    bananas.forEach(el => el.remove());
+    bowls.forEach(el => el.remove());
+    puddles.forEach(el => el.remove());
+    ufos.forEach(el => el.remove());
+    playerLasers.forEach(l => l.remove());
+    enemyLasers.forEach(l => l.remove());
+
     bananas = []; bowls = []; puddles = []; ufos = []; playerLasers = []; enemyLasers = [];
+
     gameOver = false; score = 0; bowlCount = 0; bowlCountEl.textContent = '0';
-    bgOffset = 0; boardOffset = 0; player.style.transform = 'scaleX(-1)';
-    gameOverScreen.style.display = 'none';
-    speedBanana.style.left = '-500px'; speedBanana.style.display = 'none'; speedBananaActive = false;
-    flyMode = false; invincible = false; playerScale = 1; 
-    laserEnabled = false;
-    player.style.width = '160px'; player.style.height = '160px';
+    bgOffset = 0; boardOffset = 0; speed = baseSpeed; scoreMultiplier = 1;
+    isJumping = false; flyMode = false; invincible = false; playerScale = 1;
+    playerY = 150; keySequence = []; speedBoostActive = false; speedBananaActive = false;
+    isStorm = false; stormActive = false; lastStormScore = -500;
+    laserEnabled = false; ufoStageActive = false; lives = 5; slowEffect = false;
+
+    player.classList.remove('jump');
+    player.style.transform = 'scaleX(-1)';
+    player.style.width = '160px'; player.style.height = '160px'; player.style.bottom = '150px';
     laserGun.style.display = 'none';
+
+    gameOverScreen.style.display = 'none';
     creatorZoneBtn.style.display = 'none'; creatorZoneMenu.style.display = 'none';
-    playerY = 150; player.style.bottom = '150px';
-    keySequence = []; speed = baseSpeed; scoreMultiplier = 1;
-    endStorm(); lastStormScore = -500;
-    ufoStageActive = false; lives = 5;
     heartsContainer.innerHTML = ''; heartsContainer.style.display = 'none';
     stageMessage.style.display = 'none';
     document.getElementById('leaderboard').style.display = 'none';
     document.getElementById('toggleLeaderboardBtn').textContent = 'Leaderboard';
     document.getElementById('toggleLeaderboardBtn').style.background = 'linear-gradient(135deg, #4CAF50, #388E3C)';
+    scoreEl.textContent = 'Score: 0';
+
+    document.body.style.backgroundPositionX = '0px';
+    board.style.backgroundPositionX = '0px';
+    updateSky(0);
+
+    speedBanana.style.display = 'none'; speedBanana.style.left = '-500px';
+
+    clearAllIntervals();
+
+    scheduleBananas();
+    bowlInterval = setInterval(createBowl, 5000);
+    puddleInterval = setInterval(schedulePuddles, 6000);
+    ufoInterval = setInterval(scheduleUFOs, 2000);
+
+    updateHearts();
     gameLoop();
   });
 
-  // === Scheduling ===
   function scheduleBananas() { createBanana(); setTimeout(scheduleBananas, Math.random() * 1200 + 1000); }
   function schedulePuddles() { createPuddle(); setTimeout(schedulePuddles, Math.random() * 1500 + 1000); }
-  function scheduleUFOs() { if (ufoStageActive) spawnUFO(); setTimeout(scheduleUFOs, Math.random() * 2500 + 1500); }
+  function scheduleUFOs() {
+    if (ufoStageActive && !gameOver) spawnUFO();
+    setTimeout(scheduleUFOs, Math.random() * 2500 + 1500);
+  }
 
   scheduleBananas();
-  setInterval(createBowl, 5000);
-  setInterval(schedulePuddles, 6000);
-  scheduleUFOs();
+  bowlInterval = setInterval(createBowl, 5000);
+  puddleInterval = setInterval(schedulePuddles, 6000);
+  ufoInterval = setInterval(scheduleUFOs, 2000);
   updateHearts();
   gameLoop();
 }
