@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +54,7 @@ body {
 @keyframes bounce {0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
 #restartBtn {padding:18px 36px; background:linear-gradient(135deg, #ffd700, #ffa500); border:none; border-radius:12px; cursor:pointer; font-size:24px; font-weight:bold; box-shadow:0 4px 15px rgba(255,215,0,0.6); transition:all 0.3s ease; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.3);}
 #restartBtn:hover {background:linear-gradient(135deg, #ffe066, #ffbc33); box-shadow:0 6px 20px rgba(255,255,0,0.9); transform:scale(1.05) translateY(-2px);}
-#speedBanana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/banana.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
+#speedBanana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/2x.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
 #creatorZoneBtn {
   position:absolute; top:100px; right:20px; padding:14px 28px; background:linear-gradient(135deg, #ff4d4d, #cc0000); border:none; border-radius:10px; cursor:pointer; font-size:20px; font-weight:700; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.4); box-shadow:0 4px 15px rgba(255,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.3); transition:all 0.3s ease; z-index:7; display:none;
 }
@@ -105,15 +106,19 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-/* Laser Beam */
+/* Laser Beam - שלמה עד הסוף! */
 .laser-beam {
-  position: absolute; background: linear-gradient(90deg, #ff0000, #ff9500); height: 6px; width: 0;
-  transform-origin: left center; z-index: 6; box-shadow: 0 0 15px #ff0000, 0 0 30px #ff9500;
-  animation: laserFire 0.4s ease-out forwards;
+  position: absolute; background: linear-gradient(90deg, #ff0000, #ff9500, #ffff00);
+  height: 12px; width: 0;
+  transform-origin: left center; z-index: 6;
+  box-shadow: 0 0 30px #ff0000, 0 0 60px #ff9500, 0 0 90px #ffff00;
+  animation: laserFire 0.9s ease-out forwards;
+  pointer-events: none;
 }
 @keyframes laserFire {
   0% { width: 0; opacity: 1; }
-  70% { width: 100%; opacity: 1; }
+  50% { width: 100%; opacity: 1; }
+  80% { width: 100%; opacity: 1; }
   100% { width: 100%; opacity: 0; }
 }
 /* Enemy Laser */
@@ -149,14 +154,14 @@ body {
   50% { transform: translate(-50%, -50%) scale(1.1); }
 }
 
-/* כפתור קפיצה שקוף – רק אייקון חץ לבן */
+/* כפתור קפיצה שקוף */
 #jumpButton {
   position: fixed;
   bottom: 30px;
   right: 30px;
   width: 80px;
   height: 80px;
-  background: transparent; /* שקוף! */
+  background: transparent;
   border: 4px solid rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   display: flex;
@@ -171,12 +176,14 @@ body {
   transition: all 0.2s ease;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  display: none; /* מופיע רק בטלפון */
+  display: none;
 }
 
-#jumpButton::before {}
+#jumpButton::before {
+  content: "Up Arrow";
+  font-size: 36px;
+}
 
-/* אפקט לחיצה */
 #jumpButton:active {
   transform: scale(0.88);
   border-color: rgba(255, 255, 255, 0.9);
@@ -184,14 +191,9 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* מופיע רק בטלפון */
 @media (max-width: 768px) {
-  #jumpButton {
-    display: flex;
-  }
+  #jumpButton { display: flex; }
 }
-
-/* אם תרצה להראות גם במחשב – הסר את ה-display:none */
 </style>
 </head>
 <body>
@@ -250,16 +252,13 @@ body {
   </div>
 </div>
 
-<!-- כפתור קפיצה שקוף -->
 <div id="jumpButton"></div>
 
 <script>
-// (כל הסקריפט נשאר בדיוק כמו שהיה – רק הכפתור השתנה)
-let bowlInterval, puddleInterval, ufoInterval;
+let bowlInterval, puddleInterval;
 function clearAllIntervals() {
   if (bowlInterval) clearInterval(bowlInterval);
   if (puddleInterval) clearInterval(puddleInterval);
-  if (ufoInterval) clearInterval(ufoInterval);
 }
 const STORAGE_KEY = 'capygame_leaderboard';
 function loadLeaderboard() {
@@ -316,7 +315,7 @@ function startGame(){
   const jumpButton = document.getElementById('jumpButton');
 
   let bgOffset=0, boardOffset=0, score=0;
-  let baseSpeed=6, speed=6, isJumping=false, bananas=[], bowls=[], puddles=[], ufos = [], playerLasers = [], enemyLasers = [];
+  let baseSpeed=6, speed=6, isJumping=false, bananas=[], bowls=[], puddles=[], ufos = [], enemyLasers = [];
   let bowlCount=0, gameOver=false;
   let speedBoostActive=false, scoreMultiplier=1;
   let flyMode=false, invincible=false, playerScale=1;
@@ -426,6 +425,35 @@ function startGame(){
     }
   }
 
+  // חישוב מרחק מנקודה לקו
+  function lineToPointDistance(px, py, x1, y1, x2, y2, maxDist = 35) {
+    const A = px - x1;
+    const B = py - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = -1;
+    if (lenSq !== 0) param = dot / lenSq;
+
+    let xx, yy;
+    if (param < 0) {
+      xx = x1;
+      yy = y1;
+    } else if (param > 1) {
+      xx = x2;
+      yy = y2;
+    } else {
+      xx = x1 + param * C;
+      yy = y1 + param * D;
+    }
+
+    const dx = px - xx;
+    const dy = py - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
   function shootLaser(e) {
     if (!laserEnabled || gameOver || !ufoStageActive) return;
     const gunRect = laserGun.getBoundingClientRect();
@@ -435,34 +463,27 @@ function startGame(){
     const endY = e.clientY;
     const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
     const distance = Math.hypot(endX - startX, endY - startY);
+
     const beam = document.createElement('div');
     beam.className = 'laser-beam';
-    beam.style.position = 'absolute';
     beam.style.left = startX + 'px';
     beam.style.top = startY + 'px';
     beam.style.width = distance + 'px';
-    beam.style.height = '6px';
-    beam.style.background = 'linear-gradient(90deg, #ff0000, #ff9500)';
-    beam.style.boxShadow = '0 0 20px #ff9500, 0 0 40px #ff0000';
     beam.style.transform = `rotate(${angle}deg)`;
-    beam.style.transformOrigin = 'left center';
-    beam.style.zIndex = '6';
     document.getElementById('gameContainer').appendChild(beam);
+
     setTimeout(() => {
-      const beamRect = beam.getBoundingClientRect();
       ufos = ufos.filter((ufo, i) => {
         const ufoRect = ufo.getBoundingClientRect();
-        const hit = (
-          beamRect.left < ufoRect.right &&
-          beamRect.right > ufoRect.left &&
-          beamRect.top < ufoRect.bottom &&
-          beamRect.bottom > ufoRect.top
-        );
-        if (hit) {
+        const ufoCenterX = ufoRect.left + ufoRect.width / 2;
+        const ufoCenterY = ufoRect.top + ufoRect.height / 2;
+
+        const dist = lineToPointDistance(ufoCenterX, ufoCenterY, startX, startY, endX, endY, 35);
+        if (dist < 35) {
           ufo.style.background = 'radial-gradient(circle, #ff9500, #ff0000, transparent)';
-          ufo.style.boxShadow = '0 0 50px #ff0000';
+          ufo.style.boxShadow = '0 0 80px #ff0000';
           ufo.style.transition = 'all 0.3s ease-out';
-          ufo.style.transform = 'scale(1.6) rotate(20deg)';
+          ufo.style.transform = 'scale(1.8) rotate(30deg)';
           setTimeout(() => ufo.remove(), 300);
           score += 50;
           scoreEl.textContent = 'Score: ' + Math.floor(score);
@@ -470,9 +491,12 @@ function startGame(){
         }
         return true;
       });
-      beam.remove();
-    }, 350);
-    setTimeout(() => beam.remove(), 400);
+    }, 100);
+
+    // הקרן נשארת עד הסוף – נעלמת רק אחרי 0.9 שניות
+    setTimeout(() => {
+      if (beam.parentElement) beam.remove();
+    }, 900);
   }
 
   function spawnUFO() {
@@ -483,13 +507,14 @@ function startGame(){
     ufo.style.bottom = (200 + Math.random() * 300) + 'px';
     document.getElementById('gameContainer').appendChild(ufo);
     ufos.push(ufo);
+
     const shootInterval = setInterval(() => {
       if (!ufo.parentElement || gameOver || !ufoStageActive) {
         clearInterval(shootInterval);
         return;
       }
       shootEnemyLaser(ufo);
-    }, Math.random() * 2000 + 2000);
+    }, Math.random() * 2500 + 2500);
   }
 
   function shootEnemyLaser(ufo) {
@@ -520,6 +545,13 @@ function startGame(){
         if (lives <= 0) endGame();
       }
     }, 350);
+  }
+
+  function scheduleUFOs() {
+    if (ufoStageActive && !gameOver) {
+      spawnUFO();
+    }
+    setTimeout(scheduleUFOs, 2000);
   }
 
   window.setGameSpeed = function(m) {
@@ -758,7 +790,7 @@ function startGame(){
 
     for (let i = ufos.length - 1; i >= 0; i--) {
       const ufo = ufos[i];
-      let left = parseFloat(ufo.style.left) - speed * 0.8;
+      let left = parseFloat(ufo.style.left) - speed * 0.5;
       ufo.style.left = left + 'px';
       if (left + ufo.offsetWidth < 0) { ufo.remove(); ufos.splice(i,1); continue; }
     }
@@ -794,10 +826,9 @@ function startGame(){
     bowls.forEach(el => el.remove());
     puddles.forEach(el => el.remove());
     ufos.forEach(el => el.remove());
-    playerLasers.forEach(l => l.remove());
     enemyLasers.forEach(l => l.remove());
 
-    bananas = []; bowls = []; puddles = []; ufos = []; playerLasers = []; enemyLasers = [];
+    bananas = []; bowls = []; puddles = []; ufos = []; enemyLasers = [];
 
     gameOver = false; score = 0; bowlCount = 0; bowlCountEl.textContent = '0';
     bgOffset = 0; boardOffset = 0; speed = baseSpeed; scoreMultiplier = 1;
@@ -831,7 +862,7 @@ function startGame(){
     scheduleBananas();
     bowlInterval = setInterval(createBowl, 5000);
     puddleInterval = setInterval(schedulePuddles, 6000);
-    ufoInterval = setInterval(scheduleUFOs, 2000);
+    scheduleUFOs();
 
     updateHearts();
     gameLoop();
@@ -839,15 +870,11 @@ function startGame(){
 
   function scheduleBananas() { createBanana(); setTimeout(scheduleBananas, Math.random() * 1200 + 1000); }
   function schedulePuddles() { createPuddle(); setTimeout(schedulePuddles, Math.random() * 1500 + 1000); }
-  function scheduleUFOs() {
-    if (ufoStageActive && !gameOver) spawnUFO();
-    setTimeout(scheduleUFOs, Math.random() * 2500 + 1500);
-  }
 
   scheduleBananas();
   bowlInterval = setInterval(createBowl, 5000);
   puddleInterval = setInterval(schedulePuddles, 6000);
-  ufoInterval = setInterval(scheduleUFOs, 2000);
+  scheduleUFOs();
   updateHearts();
   gameLoop();
 }
@@ -855,4 +882,4 @@ function startGame(){
 startGame();
 </script>
 </body>
-</html>
+</html>  
