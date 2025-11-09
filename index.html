@@ -238,7 +238,7 @@ body {
     <button onclick="setTimeOfDay('dawn')">Dawn</button>
     <button onclick="setTimeOfDay('storm')">Storm</button>
     <button onclick="toggleInvincibility()">Invincible</button>
-    <button onclick="addBowls(5)">+5 Bowls</button>
+    <button onclick="addBowls(987)">+987 Bowls</button>
     <button onclick="setPlayerSize(0.5)">Size: Small</button>
     <button onclick="setPlayerSize(1)">Size: Normal</button>
     <button onclick="setPlayerSize(1.5)">Size: Large</button>
@@ -358,7 +358,7 @@ function startGame(){
     ufoStageActive = true;
     lives = 5;
     updateHearts();
-    stageMessage.textContent = 'UFO Invasion!';
+    stageMessage.textContent = 'UFO Invasion! (click the spaceships)';
     stageMessage.style.display = 'block';
     setTimeout(() => stageMessage.style.display = 'none', 3000);
   }
