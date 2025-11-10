@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CapyGame - UFO Laser Stage</title>
+<title>CapyGame - 148+ YouTube Ads</title>
 <style>
 :root{
   --sky-top: #FFFBBD;
@@ -39,8 +38,15 @@ body {
 #gameContainer {position:relative; width:100vw; height:100vh; overflow:hidden; z-index:2;}
 #woodBoard {position:absolute; bottom:100px; width:200%; height:80px; background:url('https://pixabay.com/get/g2a218b15ca4261f09ca100ad35fa3b59e873b978a0544cab1000ed869b1e088ab909ff51f70fa42326a811b5d9c93e77ca4e982f354ff7765f0d507d24ba429c_1280.jpg') repeat-x; background-size:contain; box-shadow:0 25px 40px rgba(0,0,0,0.6); z-index:4;}
 #player {position:absolute; bottom:150px; left:150px; width:160px; height:160px; background-image:url('resources/capi.png'); background-size:contain; background-repeat:no-repeat; transform:scaleX(-1); transition:transform 0.5s ease; z-index:6;}
-.jump {animation: jumpAnim 0.8s forwards;}
-@keyframes jumpAnim {0%{transform:translateY(0) scaleX(-1);}40%{transform:translateY(-270px) scaleX(-1);}60%{transform:translateY(-270px) scaleX(-1);}100%{transform:translateY(0) scaleX(-1);}}
+/* קפיצה טבעית במקום – ללא תזוזה אופקית כלל! */
+.jump {
+  animation: jumpAnim 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes jumpAnim {
+  0%   { transform: translateY(0) scaleX(-1) scale(1); }
+  50%  { transform: translateY(-280px) scaleX(-1) scale(1.05); }
+  100% { transform: translateY(0) scaleX(-1) scale(1); }
+}
 .banana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/banana.png'); background-size:contain; background-repeat:no-repeat; background-position:center; transform:rotate(5deg); z-index:5;}
 .bowl, .bowlEmpty {position:absolute; width:120px; height:100px; background-size:contain; background-repeat:no-repeat; z-index:5;}
 .bowl {background-image:url('resources/dog-bowl.png');}
@@ -52,46 +58,21 @@ body {
 #gameOverScreen {display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(5px); color:#fff; font-size:48px; text-align:center; justify-content:center; align-items:center; flex-direction:column; z-index:20;}
 #gameOverScreen div {animation:bounce 1s infinite; margin-bottom:30px;}
 @keyframes bounce {0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
-#restartBtn {padding:18px 36px; background:linear-gradient(135deg, #ffd700, #ffa500); border:none; border-radius:12px; cursor:pointer; font-size:24px; font-weight:bold; box-shadow:0 4px 15px rgba(255,215,0,0.6); transition:all 0.3s ease; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.3);}
-#restartBtn:hover {background:linear-gradient(135deg, #ffe066, #ffbc33); box-shadow:0 6px 20px rgba(255,255,0,0.9); transform:scale(1.05) translateY(-2px);}
+#restartBtn164 {padding:18px 36px; background:linear-gradient(135deg, #ffd700, #ffa500); border:none; border-radius:12px; cursor:pointer; font-size:24px; font-weight:bold; box-shadow:0 4px 15px rgba(255,215,0,0.6); transition:all 0.3s ease; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.3);}
+#restartBtn164:hover {background:linear-gradient(135deg, #ffe066, #ffbc33); box-shadow:0 6px 20px rgba(255,255,0,0.9); transform:scale(1.05) translateY(-2px);}
 #speedBanana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('resources/2x.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
 #creatorZoneBtn {
   position:absolute; top:100px; right:20px; padding:14px 28px; background:linear-gradient(135deg, #ff4d4d, #cc0000); border:none; border-radius:10px; cursor:pointer; font-size:20px; font-weight:700; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.4); box-shadow:0 4px 15px rgba(255,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.3); transition:all 0.3s ease; z-index:7; display:none;
 }
-#creatorZoneBtn:hover {background:linear-gradient(135deg, #ff6666, #e60000); transform:scale(1.08) translateY(-3px); box-shadow:0 6px 20px rgba(255,0,0,0.7), inset 0 1px 5px rgba(255,255,255,0.5);}
-#creatorZoneBtn:active {transform:scale(0.98) translateY(0); box-shadow:0 2px 10px rgba(255,0,0,0.4);}
 #creatorZoneMenu {
   position:absolute; top:150px; right:20px; background:linear-gradient(to bottom, rgba(30,30,30,0.95), rgba(0,0,0,0.9)); border-radius:12px; padding:12px; display:none; z-index:8; box-shadow:0 5px 25px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); width:240px;
 }
-#creatorZoneMenu button, #creatorZoneMenu input, #creatorZoneMenu .teleport-group {
-  display:block; width:100%; padding:10px; margin:6px 0; background:linear-gradient(90deg, #00ccff, #007acc); border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600; color:#fff; text-shadow:1px 1px 2px rgba(0,0,0,0.3); box-shadow:0 2px 10px rgba(0,204,255,0.4); transition:all 0.3s ease;
-}
-#creatorZoneMenu input {
-  background:linear-gradient(90deg, #333, #555); color:white; cursor:text; text-align:center;
-}
-#creatorZoneMenu button:hover, .teleport-group button:hover {
-  background:linear-gradient(90deg, #00e6ff, #0099cc); transform:scale(1.05) translateY(-2px); box-shadow:0 4px 15px rgba(0,204,255,0.6);
-}
-#creatorZoneMenu button:active, .teleport-group button:active {
-  transform:scale(0.98) translateY(0); box-shadow:0 1px 5px rgba(0,204,255,0.3);
-}
-.teleport-group {display:flex; gap:5px;}
-.teleport-group input {flex:1; margin:0;}
-.teleport-group button {width:60px; padding:8px; font-size:14px;}
-/* Leaderboard */
 #leaderboard {
   position: absolute; top:60px; right:20px; background:rgba(0,0,0,0.75); color:white; padding:16px; border-radius:14px; font-size:18px; z-index:7; box-shadow:0 4px 20px rgba(0,0,0,0.5); width:220px; text-align:left; border:1px solid rgba(255,255,255,0.2); display:none;
 }
-#leaderboard .title {font-weight:bold; font-size:22px; margin-bottom:12px; text-shadow:1px 1px 3px rgba(0,0,0,0.7);}
-#leaderboard div {margin:6px 0; font-size:17px;}
-#clearLeaderboard {margin-top:12px; padding:8px 14px; background:#e63946; border:none; border-radius:8px; color:white; cursor:pointer; font-size:14px; font-weight:bold; transition:all 0.2s ease;}
-#clearLeaderboard:hover {background:#d00000; transform:scale(1.05);}
 #toggleLeaderboardBtn {
   position:absolute; top:20px; right:20px; padding:10px 16px; background:linear-gradient(135deg, #4CAF50, #388E3C); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; font-weight:bold; z-index:8; box-shadow:0 3px 12px rgba(0,0,0,0.4); transition:all 0.3s ease; text-shadow:1px 1px 2px rgba(0,0,0,0.3);
 }
-#toggleLeaderboardBtn:hover {background:linear-gradient(135deg, #66BB6A, #43A047); transform:translateY(-2px) scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.5);}
-#toggleLeaderboardBtn:active {transform:translateY(0) scale(0.98);}
-/* Laser Gun */
 #laserGun {
   position: absolute; bottom: 195px; left: 210px; width: 70px; height: 50px;
   background: url('https://cdn-icons-png.flaticon.com/512/2909/2909556.png') center/contain no-repeat;
@@ -99,14 +80,12 @@ body {
   filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
   transition: transform 0.1s ease;
 }
-/* UFO */
 .ufo {
   position: absolute; width: 120px; height: 80px; background: url('https://clipart-library.com/images/8T68RMeac.png') center/contain no-repeat;
   z-index: 5; filter: drop-shadow(0 0 10px #ff9500);
   animation: float 3s ease-in-out infinite;
 }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-/* Laser Beam - שלמה עד הסוף! */
 .laser-beam {
   position: absolute; background: linear-gradient(90deg, #ff0000, #ff9500, #ffff00);
   height: 12px; width: 0;
@@ -121,7 +100,6 @@ body {
   80% { width: 100%; opacity: 1; }
   100% { width: 100%; opacity: 0; }
 }
-/* Enemy Laser */
 .enemy-laser {
   position: absolute; width: 5px; height: 0; background: #00ff00; box-shadow: 0 0 15px #00ff00;
   transform-origin: top center; z-index: 5; animation: enemyLaserFire 0.7s linear forwards;
@@ -130,7 +108,6 @@ body {
   0% { height: 0; opacity: 1; }
   100% { height: 100%; opacity: 0.7; }
 }
-/* Hearts */
 #hearts {
   position: absolute; top: 20px; right: 20px; display: flex; gap: 8px; z-index: 7; display: none;
 }
@@ -143,7 +120,6 @@ body {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.15); }
 }
-/* Stage Message */
 #stageMessage {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   font-size: 48px; font-weight: bold; color: #00ff00; text-shadow: 0 0 10px #00ff00, 2px 2px 5px black;
@@ -153,41 +129,74 @@ body {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }
   50% { transform: translate(-50%, -50%) scale(1.1); }
 }
-
-/* כפתור קפיצה שקוף */
 #jumpButton {
+  position: fixed; bottom: 30px; right: 30px; width: 80px; height: 80px;
+  background: transparent; border: 4px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 40px; color: white; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  z-index: 15; cursor: pointer; user-select: none; transition: all 0.2s ease;
+  backdrop-filter: blur(5px); display: none;
+}
+#jumpButton:active { transform: scale(0.88); border-color: rgba(255, 255, 255, 0.9); }
+
+/* YouTube Banner – 148+ Times! */
+#youtubeAdBanner {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 80px;
-  height: 80px;
-  background: transparent;
-  border: 4px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  display: flex;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  background: linear-gradient(135deg, #ff0000, #cc0000);
+  color: white;
+  padding: 14px 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(255,0,0,0.5);
+  z-index: 9999;
+  text-decoration: none;
+  font-family: 'Roboto', Arial, sans-serif;
+  transition: all 0.4s ease;
+  border: 2px solid rgba(255,255,255,0.4);
+  backdrop-filter: blur(10px);
+  display: none;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
-  color: white;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  z-index: 15;
+  gap: 12px;
   cursor: pointer;
-  user-select: none;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  display: none;
+  animation: popIn 0.5s ease-out;
 }
-
-#jumpButton:active {
-  transform: scale(0.88);
-  border-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  background: rgba(255, 255, 255, 0.15);
+@keyframes popIn {
+  0% { transform: translateX(-50%) scale(0.8); opacity: 0; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
 }
+#youtubeAdBanner .ad-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+#youtubeAdBanner svg { flex-shrink: 0; width: 28px; height: 28px; }
+#youtubeAdBanner .ad-text { flex: 1; }
+#youtubeAdBanner .ad-title { font-weight: 900; font-size: 16px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+#youtubeAdBanner .ad-channel { font-size: 14px; opacity: 0.9; }
+#youtubeAdBanner .ad-btn {
+  background: rgba(255,255,255,0.25);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+#youtubeAdBanner:hover {
+  transform: translateX(-50%) scale(1.03);
+  box-shadow: 0 12px 30px rgba(255,0,0,0.6);
+}
+#youtubeAdBanner:active { transform: translateX(-50%) scale(0.98); }
 
 @media (max-width: 768px) {
   #jumpButton { display: flex; }
+  #youtubeAdBanner { padding: 12px; }
+  #youtubeAdBanner .ad-title { font-size: 15px; }
 }
 </style>
 </head>
@@ -196,6 +205,22 @@ body {
 <div id="rain"></div>
 <div id="lightning"></div>
 <div id="stormMessage">A storm begins!</div>
+
+<!-- YouTube Banner – 148+ Times! -->
+<div id="youtubeAdBanner">
+  <a href="https://www.youtube.com/@capygame_123" target="_blank" class="ad-link" style="text-decoration:none;color:inherit;display:flex;width:100%;">
+    <div class="ad-content">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
+        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9.945 16.98V7.02l7.788 4.98-7.788 4.98z"/>
+      </svg>
+      <div class="ad-text">
+        <div class="ad-title">subscribe us!</div>
+        <div class="ad-channel">@capygame</div>
+      </div>
+      <div class="ad-btn">to subscribe:</div>
+    </div>
+  </a>
+</div>
 
 <div id="gameContainer">
   <div id="woodBoard"></div>
@@ -211,7 +236,7 @@ body {
   <button id="toggleLeaderboardBtn">Leaderboard</button>
   <div id="gameOverScreen">
     <div>Game Over!</div>
-    <button id="restartBtn">Restart</button>
+    <button id="restartBtn164">Restart</button>
   </div>
   <button id="creatorZoneBtn">Creator Zone</button>
   <div id="creatorZoneMenu">
@@ -247,9 +272,26 @@ body {
   </div>
 </div>
 
-<div id="jumpButton"></div>
+<div id="jumpButton">UP</div>
 
 <script>
+// מערכת פרסומות יוטיוב – 148+ פעמים!
+function showYouTubeAd() {
+  const banner = document.getElementById('youtubeAdBanner');
+  banner.style.display = 'flex';
+  banner.style.opacity = '1';
+  setTimeout(() => {
+    banner.style.opacity = '0';
+    setTimeout(() => banner.style.display = 'none', 400);
+  }, 8000);
+}
+showYouTubeAd();
+setInterval(showYouTubeAd, 15000);
+function showAdOnRestart() {
+  setTimeout(showYouTubeAd, 3000);
+}
+
+// שאר הקוד של המשחק
 let bowlInterval, puddleInterval;
 function clearAllIntervals() {
   if (bowlInterval) clearInterval(bowlInterval);
@@ -297,7 +339,7 @@ function startGame(){
   const board = document.getElementById('woodBoard');
   const scoreEl = document.getElementById('score');
   const gameOverScreen = document.getElementById('gameOverScreen');
-  const restartBtn = document.getElementById('restartBtn');
+  const restartBtn = document.getElementById('restartBtn164');
   const bowlCountEl = document.getElementById('bowlCount');
   const sky = document.getElementById('sky');
   const rain = document.getElementById('rain');
@@ -310,7 +352,7 @@ function startGame(){
   const jumpButton = document.getElementById('jumpButton');
 
   let bgOffset=0, boardOffset=0, score=0;
-  let baseSpeed=6, speed=6, isJumping=false, bananas=[], bowls=[], puddles=[], ufos = [], enemyLasers = [];
+  let baseSpeed=9.6, speed=9.6, isJumping=false, bananas=[], bowls=[], puddles=[], ufos = [], enemyLasers = [];
   let bowlCount=0, gameOver=false;
   let speedBoostActive=false, scoreMultiplier=1;
   let flyMode=false, invincible=false, playerScale=1;
@@ -339,7 +381,7 @@ function startGame(){
       heart.classList.add('heart');
       heartsContainer.appendChild(heart);
     }
-    heartsContainer.style.display = ufoStageActive ? 'flex' : 'none';
+    heartsContainer.style.display = ufoStageActive ? '  flex' : 'none';
   }
 
   function isInUFOStage() {
@@ -420,7 +462,6 @@ function startGame(){
     }
   }
 
-  // חישוב מרחק מנקודה לקו
   function lineToPointDistance(px, py, x1, y1, x2, y2, maxDist = 35) {
     const A = px - x1;
     const B = py - y1;
@@ -488,7 +529,6 @@ function startGame(){
       });
     }, 100);
 
-    // הקרן נשארת עד הסוף – נעלמת רק אחרי 0.9 שניות
     setTimeout(() => {
       if (beam.parentElement) beam.remove();
     }, 900);
@@ -614,7 +654,7 @@ function startGame(){
     setTimeout(() => {
       player.classList.remove('jump');
       isJumping = false;
-    }, 800);
+    }, 700);
   }
 
   document.addEventListener('keydown', e => {
@@ -861,6 +901,8 @@ function startGame(){
 
     updateHearts();
     gameLoop();
+
+    showAdOnRestart();
   });
 
   function scheduleBananas() { createBanana(); setTimeout(scheduleBananas, Math.random() * 1200 + 1000); }
@@ -877,4 +919,4 @@ function startGame(){
 startGame();
 </script>
 </body>
-</html>  
+</html>
