@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>flaficapy</title>
+<style>
+    body{margin:0;overflow:hidden;background:#000;}
+    canvas{display:block;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let birdY = canvas.height/2, vy = 0;
+let pipes = [];
+let score = 0;
+let gameOn = true;
+let frameCount = 0;
+
+const birdImg = new Image();
+birdImg.src = "https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png";
+
+// שמיים יפהפיים שמשתנים לאט לאט (יום שלם = 30 דקות – תראה הכל תוך כדי משחק!)
+function getSkyColors() {
+    const p = (frameCount / 60 / 30) % 1;  // 30 דקות = יום שלם
+    if (p < 0.25) return {top: lerp("#0f172a","#60a5fa",p*4),    bottom: lerp("#1e293b","#99f6e4",p*4)};
+    if (p < 0.5)  return {top: "#60a5fa", bottom: "#99f6e4"};
+    if (p < 0.75) return {top: lerp("#60a5fa","#fb923c", (p-0.5)*4), bottom: lerp("#99f6e4","#fecaca",(p-0.5)*4)};
+    return {top: lerp("#fb923c","#1e293b",(p-0.75)*4), bottom: lerp("#fecaca","#475569",(p-0.75)*4)};
+}
+
+function lerp(a,b,t){
+    const ah=parseInt(a.slice(1),16), bh=parseInt(b.slice(1),16);
+    const ar=(ah>>16)&255, ag=(ah>>8)&255, ab=ah&255;
+    const br=(bh>>16)&255, bg=(bh>>8)&255, bb=bh&255;
+    return "#"+((1<<24)+((ar+t*(br-ar))<<16)+((ag+t*(bg-ag))<<8)+(ab+t*(bb-ab))|0).toString(16).slice(1);
+}
+
+function drawBird() {
+    ctx.save();
+    ctx.translate(120, birdY);
+    ctx.rotate(vy * 0.08);
+    ctx.shadowBlur = 50;
+    ctx.shadowColor = "#ff0";
+    ctx.drawImage(birdImg, -60, -60, 120, 120);
+    ctx.restore();
+}
+
+function createPipe() {
+    const h = 100 + Math.random() * (canvas.height - 500);
+    pipes.push({x: canvas.width, top: h, gap: 320, passed: false});
+}
+
+function drawPipes() {
+    pipes.forEach(p => {
+        ctx.fillStyle = "#00ff9d";
+        ctx.shadowBlur = 25;
+        ctx.shadowColor = "#0f0";
+        ctx.fillRect(p.x, 0, 100, p.top);
+        ctx.fillRect(p.x-15, p.top-70, 130, 80);
+        ctx.fillRect(p.x, p.top + p.gap, 100, canvas.height);
+        ctx.fillRect(p.x-15, p.top + p.gap - 10, 130, 80);
+    });
+}
+
+function update() {
+    if (!gameOn) return;
+
+    vy += 0.85;           // כבידה חזקה = כיף אמיתי!
+    birdY += vy;
+
+    if (birdY > canvas.height || birdY < -100) endGame();
+
+    if (frameCount % 90 === 0) createPipe();   // צינור כל 1.5 שניות
+
+    for (let i = pipes.length-1; i >= 0; i--) {
+        pipes[i].x -= 4.5;    // מהיר כמו פלאפי בירד אמיתי!
+
+        if (pipes[i].x + 100 < 0) pipes.splice(i,1);
+
+        if (!pipes[i].passed && pipes[i].x + 100 < 120) {
+            pipes[i].passed = true;
+            score++;
+        }
+
+        if (120 + 60 > pipes[i].x && 120 - 60 < pipes[i].x + 100) {
+            if (birdY - 60 < pipes[i].top || birdY + 60 > pipes[i].top + pipes[i].gap) {
+                endGame();
+            }
+        }
+    }
+}
+
+function drawSunMoon() {
+    const p = (frameCount / 60 / 30) % 1;
+    const angle = p * Math.PI * 2;
+    const x = canvas.width/2 + Math.cos(angle) * canvas.width * 0.7;
+    const y = canvas.height/2 + Math.sin(angle) * canvas.height * 0.4;
+
+    if (p < 0.75) {
+        ctx.fillStyle = "#FFD700";
+        ctx.shadowBlur = 120;
+        ctx.shadowColor = "#FFAA00";
+        ctx.beginPath(); ctx.arc(x, y, 90, 0, Math.PI*2); ctx.fill();
+    } else {
+        ctx.fillStyle = "#f0f8ff";
+        ctx.shadowBlur = 100;
+        ctx.shadowColor = "#ffffff88";
+        ctx.beginPath(); ctx.arc(x, y, 70, 0, Math.PI*2); ctx.fill();
+    }
+}
+
+function loop() {
+    frameCount++;
+
+    // רקע מדהים
+    const sky = getSkyColors();
+    const grad = ctx.createLinearGradient(0,0,0,canvas.height);
+    grad.addColorStop(0, sky.top);
+    grad.addColorStop(1, sky.bottom);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    drawSunMoon();
+    drawPipes();
+    drawBird();
+
+    // ניקוד ענק וברור
+    ctx.fillStyle = "white";
+    ctx.font = "bold 140px Arial";
+    ctx.textAlign = "center";
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "black";
+    ctx.fillText(score, canvas.width/2, 160);
+
+    update();
+    requestAnimationFrame(loop);
+}
+
+// קפיצה חזקה ומגניבה
+document.addEventListener("click", () => { if(gameOn) vy = -14; });
+document.addEventListener("keydown", e => { 
+    if(e.code === "Space") { e.preventDefault(); if(gameOn) vy = -14; }
+});
+
+function endGame() {
+    gameOn = false;
+    setTimeout(() => {
+        alert(`נסה שוב!`);
+        score = 0;
+        birdY = canvas.height/2;
+        vy = 0;
+        pipes = [];
+        gameOn = true;
+    }, 100);
+}
+
+window.addEventListener("resize", () => {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+});
+
+loop(); // מתחילים מיד – מהיר ומגניב!
+</script>
+</body>
+</html>

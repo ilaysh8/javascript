@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('https://static.beebom.com/wp-content/uploads/2025/07/Steal-a-Brainrot-Pathway-2.jpg?w=1024') no-repeat center center fixed;
+            background-size: cover;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00ffcc;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px #00ffcc, 0 0 15px #ff00ff;
+            margin: 0;
+            animation: neonGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #e0e0e0;
+            margin: 10px 0 0;
+        }
+
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader::after {
+            content: '';
+            width: 40px;
+            height: 40px;
+            border: 4px solid #00ffcc;
+            border-top: 4px solid #ff00ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            width: 100%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            border: 2px solid #00ffcc;
+        }
+
+        .lucky-block {
+            text-align: center;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lucky-block:hover {
+            transform: translateY(-10px) rotate(2deg);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 15px #00ffcc;
+        }
+
+        .lucky-block img {
+            width: 120px;
+            height: auto;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .lucky-block:hover img {
+            transform: scale(1.1) rotate(-2deg);
+        }
+
+        .lucky-block button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: linear-gradient(145deg, #00ffcc, #ff00ff);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .lucky-block button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px #00ffcc;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff, #f0f2f5);
+            margin: auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px #ff00ff;
+            position: relative;
+            animation: slideIn 0.3s ease;
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #00ffcc;
+            text-align: center;
+        }
+
+        .close {
+            color: #ff6b6b;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #d63031;
+        }
+
+        .drop-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .drop-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            position: relative;
+        }
+
+        .drop-item:hover {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 10px #00ffcc;
+            transform: scale(1.02);
+        }
+
+        .drop-item span {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #e84393;
+            min-width: 80px;
+            text-align: right;
+            margin-right: 15px;
+        }
+
+        .drop-item img {
+            width: 60px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .drop-item.rare::before {
+            content: '⭐';
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            font-size: 1.2rem;
+            color: #ffd700;
+            text-shadow: 0 0 5px #ff0;
+        }
+
+        .result-modal img {
+            width: 150px;
+            max-width: 90%;
+            border-radius: 15px;
+            animation: cycleImage 0.1s ease;
+        }
+
+        .result-modal h2 {
+            font-size: 1.8rem;
+            color: #e84393;
+            text-shadow: 0 0 10px #00ffcc;
+            margin: 10px 0;
+        }
+
+        .soon-button {
+            position: fixed;
+            right: 20px;
+            top: 70%;
+            transform: translateY(-50%);
+            background: linear-gradient(145deg, #ff00ff, #00ffcc);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 0 20px #00ffcc, 0 0 30px #ff00ff;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lucky-clover-button {
+            position: fixed;
+            left: 20px;
+            top: 70%;
+            transform: translateY(-50%);
+            background: linear-gradient(145deg, #00ff00, #00ffcc);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 0 20px #00ff00, 0 0 30px #00ffcc;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .soon-button:hover, .lucky-clover-button:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 25px #00ffcc, 0 0 35px #ff00ff;
+        }
+
+        .soon-button img, .lucky-clover-button img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .soon-button span, .lucky-clover-button span {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-shadow: 0 0 10px #00ffcc, 0 0 15px #ff00ff;
+        }
+
+        #soon-modal .modal-content, #lucky-clover-modal .modal-content {
+            text-align: center;
+            padding: 20px;
+        }
+
+        #soon-modal img {
+            width: 300px;
+            max-width: 90%;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #00ffcc;
+        }
+
+        #lucky-clover-modal h2 {
+            font-size: 1.8rem;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ffcc;
+            margin: 10px 0;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes neonGlow {
+            from { text-shadow: 0 0 10px #00ffcc, 0 0 20px #ff00ff, 0 0 30px #4d71ff; }
+            to { text-shadow: 0 0 20px #00ffcc, 0 0 30px #ff00ff, 0 0 40px #4d71ff; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes cycleImage {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .header p {
+                font-size: 1rem;
+            }
+            .container {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            .lucky-block img {
+                width: 100px;
+            }
+            .lucky-block button {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            .drop-item span {
+                font-size: 1rem;
+                min-width: 60px;
+            }
+            .drop-item img {
+                width: 50px;
+            }
+            .result-modal img {
+                width: 120px;
+            }
+            .result-modal h2 {
+                font-size: 1.5rem;
+            }
+            .soon-button, .lucky-clover-button {
+                right: 10px;
+                padding: 10px;
+                top: 70%;
+            }
+            .lucky-clover-button {
+                left: 10px;
+            }
+            .soon-button img, .lucky-clover-button img {
+                width: 80px;
+                height: 80px;
+            }
+            .soon-button span, .lucky-clover-button span {
+                font-size: 1rem;
+            }
+            #soon-modal img {
+                width: 200px;
+            }
+            #lucky-clover-modal h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .header p {
+                font-size: 0.9rem;
+            }
+            .lucky-block {
+                padding: 10px;
+            }
+            .lucky-block img {
+                width: 80px;
+            }
+            .lucky-block button {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+            .modal-content {
+                padding: 15px;
+            }
+            .drop-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .drop-item span {
+                text-align: left;
+                margin-bottom: 10px;
+            }
+            .result-modal img {
+                width: 100px;
+            }
+            .result-modal h2 {
+                font-size: 1.2rem;
+            }
+            .soon-button, .lucky-clover-button {
+                top: 85%;
+                padding: 8px;
+            }
+            .lucky-clover-button {
+                left: 10px;
+            }
+            .soon-button img, .lucky-clover-button img {
+                width: 60px;
+                height: 60px;
+            }
+            #lucky-clover-modal h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader" id="loader"></div>
+    <header class="header" role="banner">
+        <h1>Steal a Brainrot Lucky Blocks</h1>
+        <p>Unlock the chaos of Brainrot with these wild Lucky Blocks! Click to reveal epic drops or break a block to test your luck!</p>
+    </header>
+    <div class="soon-button" role="button" aria-label="Open Coming Soon Modal" onclick="openSoonModal()">
+        <img src="https://static.wikia.nocookie.net/stealabr/images/9/9f/Boombig.png/revision/latest?cb=20251022155147" alt="Coming Soon Icon" loading="lazy">
+        <span>Coming Soon</span>
+    </div>
+    <div class="lucky-clover-button" role="button" aria-label="Activate Lucky Clover" onclick="activateLuckyClover()">
+        <img src="https://png.pngtree.com/png-clipart/20230403/original/pngtree-green-gradient-lucky-clover-leaf-with-transparent-background-png-image_9022162.png" alt="Lucky Clover Icon" loading="lazy">
+        <span>Lucky Clover</span>
+    </div>
+
+    <div class="container">
+        <div class="lucky-block" role="button" aria-label="Lucky Block 1">
+            <img src="https://tr.rbxcdn.com/180DAY-d85dc3679f074e7e14f09a7ed767b9f1/420/420/Hat/Webp/noFilter" alt="Lucky Block 1" loading="lazy">
+            <button onclick="openLuckyBlockModal('modal1')" aria-label="View Drops for Lucky Block 1">View Drops</button>
+            <button onclick="breakLuckyBlock('modal1')" aria-label="Break Lucky Block 1">Break Block</button>
+        </div>
+        <div class="lucky-block" role="button" aria-label="Lucky Block 2">
+            <img src="https://static.wikia.nocookie.net/stealabr/images/7/76/Childhood_gambling.png/revision/latest?cb=20250902180130" alt="Lucky Block 2" loading="lazy">
+            <button onclick="openLuckyBlockModal('modal2')" aria-label="View Drops for Lucky Block 2">View Drops</button>
+            <button onclick="breakLuckyBlock('modal2')" aria-label="Break Lucky Block 2">Break Block</button>
+        </div>
+        <div class="lucky-block" role="button" aria-label="Lucky Block 3">
+            <img src="https://static.wikia.nocookie.net/stealabr/images/f/f5/THE_FOG_IS_COMING.png/revision/latest?cb=20250902180626" alt="Lucky Block 3" loading="lazy">
+            <button onclick="openLuckyBlockModal('modal3')" aria-label="View Drops for Lucky Block 3">View Drops</button>
+            <button onclick="breakLuckyBlock('modal3')" aria-label="Break Lucky Block 3">Break Block</button>
+        </div>
+        <div class="lucky-block" role="button" aria-label="Lucky Block 4">
+            <img src="https://static.wikia.nocookie.net/stealabr/images/1/16/Los_lucky_blockss.png/revision/latest?cb=20251007132603" alt="Lucky Block 4" loading="lazy">
+            <button onclick="openLuckyBlockModal('modal4')" aria-label="View Drops for Lucky Block 4">View Drops</button>
+            <button onclick="breakLuckyBlock('modal4')" aria-label="Break Lucky Block 4">Break Block</button>
+        </div>
+        <div class="lucky-block" role="button" aria-label="Lucky Block 5">
+            <img src="https://static.wikia.nocookie.net/stealabr/images/8/81/TacoLuckyBlock2.png/revision/latest/thumbnail/width/360/height/360?cb=20251007133142" alt="Lucky Block 5" loading="lazy">
+            <button onclick="openLuckyBlockModal('modal5')" aria-label="View Drops for Lucky Block 5">View Drops</button>
+            <button onclick="breakLuckyBlock('modal5')" aria-label="Break Lucky Block 5">Break Block</button>
+        </div>
+        <div class="lucky-block" role="button" aria-label="Lucky Block 6">
+            <img src="https://static.wikia.nocookie.net/stealabr/images/7/7c/AdminLuckyBlock.png/revision/latest?cb=20251007132226" alt="Lucky Block 6" loading="lazy">
+            <button onclick="openLuckyBlockModal('modal6')" aria-label="View Drops for Lucky Block 6">View Drops</button>
+            <button onclick="breakLuckyBlock('modal6')" aria-label="Break Lucky Block 6">Break Block</button>
+        </div>
+    </div>
+
+    <div id="modal1" class="modal" role="dialog" aria-labelledby="modal1-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Modal" onclick="closeModal('modal1')">&times;</span>
+            <h2 id="modal1-title">Lucky Block 1 Drops</h2>
+            <ul class="drop-list">
+                <li class="drop-item" data-prob="74.5" data-img="https://static.wikia.nocookie.net/stealabr/images/8/8c/Crack.png/revision/latest?cb=20250919134500" data-alt="Crack Drop">
+                    <span>74.5%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/8/8c/Crack.png/revision/latest?cb=20250919134500" alt="Crack Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="21" data-img="https://static.wikia.nocookie.net/stealabr/images/4/4b/Pot_Hotspot.png/revision/latest?cb=20250915194349" data-alt="Pot Hotspot Drop">
+                    <span>21%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/4/4b/Pot_Hotspot.png/revision/latest?cb=20250915194349" alt="Pot Hotspot Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="3" data-img="https://static.wikia.nocookie.net/stealabr/images/2/2a/EsokSekolah2.png/revision/latest?cb=20250819001020" data-alt="Esok Sekolah Drop">
+                    <span>3%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/2/2a/EsokSekolah2.png/revision/latest?cb=20250819001020" alt="Esok Sekolah Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="1" data-img="https://static.wikia.nocookie.net/stealabr/images/b/b8/Spaghettitualetti.png/revision/latest?cb=20250928162127" data-alt="Spaghettitualetti Drop">
+                    <span>1%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/b/b8/Spaghettitualetti.png/revision/latest?cb=20250928162127" alt="Spaghettitualetti Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="0.5" data-img="https://static.wikia.nocookie.net/stealabr/images/f/f2/Lasecretcombinasion.png/revision/latest/thumbnail/width/360/height/360?cb=20251006044448" data-alt="La Secret Combinasion Drop">
+                    <span>0.5%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/f/f2/Lasecretcombinasion.png/revision/latest/thumbnail/width/360/height/360?cb=20251006044448" alt="La Secret Combinasion Drop" loading="lazy">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal2" class="modal" role="dialog" aria-labelledby="modal2-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Modal" onclick="closeModal('modal2')">&times;</span>
+            <h2 id="modal2-title">Lucky Block 2 Drops</h2>
+            <ul class="drop-list">
+                <li class="drop-item" data-prob="55" data-img="https://static.wikia.nocookie.net/stealabr/images/7/71/Tigroligre.png/revision/latest?cb=20250916002012" data-alt="Childhood Gambling Drop">
+                    <span>55%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/7/71/Tigroligre.png/revision/latest?cb=20250916002012" alt="Childhood Gambling Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="30" data-img="https://static.wikia.nocookie.net/stealabr/images/d/d4/Orcalero_Orcala.png/revision/latest?cb=20250917040741" data-alt="Orcalero Orcala Drop">
+                    <span>30%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/d/d4/Orcalero_Orcala.png/revision/latest?cb=20250917040741" alt="Orcalero Orcala Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="10" data-img="https://static.wikia.nocookie.net/stealabr/images/e/eb/Five_hotdogs_for_dinner_tonight.png/revision/latest?cb=20250909222352" data-alt="Five Hotdogs Drop">
+                    <span>10%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/e/eb/Five_hotdogs_for_dinner_tonight.png/revision/latest?cb=20250909222352" alt="Five Hotdogs Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="5" data-img="https://static.wikia.nocookie.net/stealabr/images/a/a5/Clanker.png/revision/latest/scale-to-width-down/250?cb=20250902184428" data-alt="Clanker Drop">
+                    <span>5%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/a/a5/Clanker.png/revision/latest/scale-to-width-down/250?cb=20250902184428" alt="Clanker Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="1" data-img="https://static.wikia.nocookie.net/stealabr/images/3/39/PopPopSahur.png/revision/latest?cb=20251006142317" data-alt="PopPopSahur Drop">
+                    <span>1%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/3/39/PopPopSahur.png/revision/latest?cb=20251006142317" alt="PopPopSahur Drop" loading="lazy">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal3" class="modal" role="dialog" aria-labelledby="modal3-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Modal" onclick="closeModal('modal3')">&times;</span>
+            <h2 id="modal3-title">Lucky Block 3 Drops</h2>
+            <ul class="drop-list">
+                <li class="drop-item" data-prob="37" data-img="https://static.wikia.nocookie.net/stealabr/images/4/40/Weed.png/revision/latest?cb=20250902182104" data-alt="Weed Drop">
+                    <span>37%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/4/40/Weed.png/revision/latest?cb=20250902182104" alt="Weed Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="30" data-img="https://static.wikia.nocookie.net/stealabr/images/f/fc/Zibra_Zubra_Zibralini.png/revision/latest?cb=20250803134054" data-alt="Zibra Zubra Zibralini Drop">
+                    <span>30%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/f/fc/Zibra_Zubra_Zibralini.png/revision/latest?cb=20250803134054" alt="Zibra Zubra Zibralini Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="20" data-img="https://static.wikia.nocookie.net/stealabr/images/5/59/Tigrilini_Watermelini1.png/revision/latest?cb=20250826073611" data-alt="Tigrilini Watermelini Drop">
+                    <span>20%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/5/59/Tigrilini_Watermelini1.png/revision/latest?cb=20250826073611" alt="Tigrilini Watermelini Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="10" data-img="https://static.wikia.nocookie.net/stealabr/images/e/ef/Famine.png/revision/latest?cb=20250909161804" data-alt="Famine Drop">
+                    <span>10%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/e/ef/Famine.png/revision/latest?cb=20250909161804" alt="Famine Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="3" data-img="https://static.wikia.nocookie.net/stealabr/images/2/2a/Screenshot_2025-10-04_132952.png/revision/latest?cb=20251006172015" data-alt="Rare Screenshot Drop">
+                    <span>3%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/2/2a/Screenshot_2025-10-04_132952.png/revision/latest?cb=20251006172015" alt="Rare Screenshot Drop" loading="lazy">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal4" class="modal" role="dialog" aria-labelledby="modal4-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Modal" onclick="closeModal('modal4')">&times;</span>
+            <h2 id="modal4-title">Lucky Block 4 Drops</h2>
+            <ul class="drop-list">
+                <li class="drop-item" data-prob="40" data-img="https://static.wikia.nocookie.net/stealabr/images/1/16/Alvin_and_the_chipmunks.png/revision/latest/scale-to-width-down/1000?cb=20250902182634" data-alt="Los Lucky Blocks Drop">
+                    <span>40%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/1/16/Alvin_and_the_chipmunks.png/revision/latest/scale-to-width-down/1000?cb=20250902182634" alt="Los Lucky Blocks Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="25" data-img="https://static.wikia.nocookie.net/stealabr/images/d/de/The_middle_one_clawed_out_my_eyes.png/revision/latest?cb=20250902182803" data-alt="Clawed Eyes Drop">
+                    <span>25%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/d/de/The_middle_one_clawed_out_my_eyes.png/revision/latest?cb=20250902182803" alt="Clawed Eyes Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="15" data-img="https://static.wikia.nocookie.net/stealabr/images/2/27/Los_orcalitos.png/revision/latest?cb=20251006201225" data-alt="Los Orcalitos Drop">
+                    <span>15%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/2/27/Los_orcalitos.png/revision/latest?cb=20251006201225" alt="Los Orcalitos Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="10" data-img="https://static.wikia.nocookie.net/stealabr/images/f/f2/Los_tipi_tacos.png/revision/latest?cb=20250914130151" data-alt="Los Tipi Tacos Drop">
+                    <span>10%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/f/f2/Los_tipi_tacos.png/revision/latest?cb=20250914130151" alt="Los Tipi Tacos Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="5" data-img="https://static.wikia.nocookie.net/stealabr/images/c/cb/LosTortuss.png/revision/latest?cb=20251006205613" data-alt="Los Tortuss Drop">
+                    <span>5%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/c/cb/LosTortuss.png/revision/latest?cb=20251006205613" alt="Los Tortuss Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="3.5" data-img="https://static.wikia.nocookie.net/stealabr/images/a/af/LosJobcitos.png/revision/latest?cb=20251006202121" data-alt="Los Jobcitos Drop">
+                    <span>3.5%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/a/af/LosJobcitos.png/revision/latest?cb=20251006202121" alt="Los Jobcitos Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="1" data-img="https://static.wikia.nocookie.net/stealabr/images/3/36/Stop_taking_my_chips_im_just_a_baybeh.png/revision/latest?cb=20250909223756" data-alt="Stop Taking My Chips Drop">
+                    <span>1%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/3/36/Stop_taking_my_chips_im_just_a_baybeh.png/revision/latest?cb=20250909223756" alt="Stop Taking My Chips Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="0.5" data-img="https://static.wikia.nocookie.net/stealabr/images/d/db/Los-67.png/revision/latest?cb=20251006195232" data-alt="Los-67 Drop">
+                    <span>0.5%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/d/db/Los-67.png/revision/latest?cb=20251006195232" alt="Los-67 Drop" loading="lazy">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal5" class="modal" role="dialog" aria-labelledby="modal5-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Modal" onclick="closeModal('modal5')">&times;</span>
+            <h2 id="modal5-title">Lucky Block 5 Drops</h2>
+            <ul class="drop-list">
+                <li class="drop-item" data-prob="50.1" data-img="https://static.wikia.nocookie.net/stealabr/images/0/07/Yo_quiero_taco_bell.png/revision/latest?cb=20250909222119" data-alt="Yo Quiero Taco Bell Drop">
+                    <span>50.1%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/0/07/Yo_quiero_taco_bell.png/revision/latest?cb=20250909222119" alt="Yo Quiero Taco Bell Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="32" data-img="https://static.wikia.nocookie.net/stealabr/images/6/67/Gattatino_Nyaninno.png/revision/latest?cb=20250909170101" data-alt="Gattatino Nyaninno Drop">
+                    <span>32%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/6/67/Gattatino_Nyaninno.png/revision/latest?cb=20250909170101" alt="Gattatino Nyaninno Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="10" data-img="https://static.wikia.nocookie.net/stealabr/images/f/f2/Los_tipi_tacos.png/revision/latest?cb=20250914130151" data-alt="Los Tipi Tacos Drop">
+                    <span>10%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/f/f2/Los_tipi_tacos.png/revision/latest?cb=20250914130151" alt="Los Tipi Tacos Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="3" data-img="https://static.wikia.nocookie.net/stealabr/images/3/3f/QuesadillaCrocodilla.png/revision/latest?cb=20251006143118" data-alt="Quesadilla Crocodilla Drop">
+                    <span>3%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/3/3f/QuesadillaCrocodilla.png/revision/latest?cb=20251006143118" alt="Quesadilla Crocodilla Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="1" data-img="https://static.wikia.nocookie.net/stealabr/images/c/cb/LosNooMyHotspotsitos.png/revision/latest?cb=20250903124000" data-alt="Los Noo My Hotspotsitos Drop">
+                    <span>1%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/c/cb/LosNooMyHotspotsitos.png/revision/latest?cb=20250903124000" alt="Los Noo My Hotspotsitos Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="0.5" data-img="https://static.wikia.nocookie.net/stealabr/images/4/43/Burrito_banditoooo.png/revision/latest?cb=20251022122228" data-alt="Burrito Bandito Drop">
+                    <span>0.5%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/4/43/Burrito_banditoooo.png/revision/latest?cb=20251022122228" alt="Burrito Bandito Drop" loading="lazy">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal6" class="modal" role="dialog" aria-labelledby="modal6-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Modal" onclick="closeModal('modal6')">&times;</span>
+            <h2 id="modal6-title">Lucky Block 6 Drops</h2>
+            <ul class="drop-list">
+                <li class="drop-item" data-prob="30" data-img="https://static.wikia.nocookie.net/stealabr/images/a/ad/Mateo_fish.png/revision/latest?cb=20250902184935" data-alt="Mateo Fish Drop">
+                    <span>30%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/a/ad/Mateo_fish.png/revision/latest?cb=20250902184935" alt="Mateo Fish Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="30" data-img="https://static.wikia.nocookie.net/stealabr/images/1/16/Alvin_and_the_chipmunks.png/revision/latest/scale-to-width-down/1000?cb=20250902182634" data-alt="Alvin and the Chipmunks Drop">
+                    <span>30%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/1/16/Alvin_and_the_chipmunks.png/revision/latest/scale-to-width-down/1000?cb=20250902182634" alt="Alvin and the Chipmunks Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="20" data-img="https://static.wikia.nocookie.net/stealabr/images/7/71/Testicular_torsion.png/revision/latest?cb=20250902183820" data-alt="Testicular Torsion Drop">
+                    <span>20%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/7/71/Testicular_torsion.png/revision/latest?cb=20250902183820" alt="Testicular Torsion Drop" loading="lazy">
+                </li>
+                <li class="drop-item" data-prob="10" data-img="https://static.wikia.nocookie.net/stealabr/images/8/84/CrabboLimonetta.png/revision/latest?cb=20250920160824" data-alt="Crabbo Limonetta Drop">
+                    <span>10%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/8/84/CrabboLimonetta.png/revision/latest?cb=20250920160824" alt="Crabbo Limonetta Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="3" data-img="https://static.wikia.nocookie.net/stealabr/images/9/98/Guerrirodigitale.png/revision/latest?cb=20250830234708" data-alt="Guerriro Digitale Drop">
+                    <span>3%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/9/98/Guerrirodigitale.png/revision/latest?cb=20250830234708" alt="Guerriro Digitale Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="3" data-img="https://static.wikia.nocookie.net/stealabr/images/7/77/Blackhole_goat.png/revision/latest?cb=20250824023245" data-alt="Blackhole Goat Drop">
+                    <span>3%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/7/77/Blackhole_goat.png/revision/latest?cb=20250824023245" alt="Blackhole Goat Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="0.75" data-img="https://static.wikia.nocookie.net/stealabr/images/8/83/BOIIIIIII_SIX_SEVEN_%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82.png/revision/latest?cb=20250914041244" data-alt="BOIIIIIII SIX SEVEN Drop">
+                    <span>0.75%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/8/83/BOIIIIIII_SIX_SEVEN_%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82.png/revision/latest?cb=20250914041244" alt="BOIIIIIII SIX SEVEN Drop" loading="lazy">
+                </li>
+                <li class="drop-item rare" data-prob="0.25" data-img="https://static.wikia.nocookie.net/stealabr/images/d/d8/Carti.png/revision/latest?cb=20250909171004" data-alt="Carti Drop">
+                    <span>0.25%</span>
+                    <img src="https://static.wikia.nocookie.net/stealabr/images/d/d8/Carti.png/revision/latest?cb=20250909171004" alt="Carti Drop" loading="lazy">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="soon-modal" class="modal" role="dialog" aria-labelledby="soon-modal-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Modal" onclick="closeModal('soon-modal')">&times;</span>
+            <h2 id="soon-modal-title">Coming Soon</h2>
+            <img src="https://static.wikia.nocookie.net/stealabr/images/9/9f/Boombig.png/revision/latest?cb=20251022155147" alt="Boombig Coming Soon" loading="lazy">
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal result-modal" role="dialog" aria-labelledby="result-modal-title">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Close Result Modal" onclick="closeModal('result-modal')">&times;</span>
+            <h2 id="result-modal-title">You Got a Drop!</h2>
+            <img id="result-drop-img" src="" alt="Cycling Drop" loading="lazy">
+        </div>
+    </div>
+
+    <div id="lucky-clover-modal" class="modal" role="dialog" aria-labelledby="lucky-clover-modal-title">
+        <div class="modal-content">
+            <h2 id="lucky-clover-modal-title">כפול 2 מזל!</h2>
+        </div>
+    </div>
+
+    <script>
+        let cloverLuckMultiplier = 1;
+        let cloverClickCount = 0;
+        const maxCloverClicks = 6;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.classList.add('hidden');
+            }, 1000);
+
+            document.addEventListener('click', (event) => {
+                if (event.target.classList.contains('modal') && event.target.id !== 'lucky-clover-modal') {
+                    closeModal(event.target.id);
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        if (modal.style.display === 'flex' && modal.id !== 'lucky-clover-modal') {
+                            closeModal(modal.id);
+                        }
+                    });
+                }
+            });
+        });
+
+        function openSoonModal() {
+            const modal = document.getElementById('soon-modal');
+            modal.style.display = 'flex';
+            playSound('https://www.soundjay.com/buttons/button-02.mp3');
+            modal.focus();
+        }
+
+        function activateLuckyClover() {
+            if (cloverClickCount >= maxCloverClicks) return; // Max clicks reached
+            cloverClickCount++;
+            const multiplier = 2 * cloverClickCount;
+            cloverLuckMultiplier = multiplier;
+
+            const modal = document.getElementById('lucky-clover-modal');
+            const modalTitle = document.getElementById('lucky-clover-modal-title');
+            modalTitle.textContent = `כפול ${multiplier} מזל!`;
+            modal.style.display = 'flex';
+            playSound('https://www.soundjay.com/buttons/button-07.mp3');
+            modal.focus();
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 2000);
+        }
+
+        function openLuckyBlockModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            playSound('https://www.soundjay.com/buttons/button-03.mp3');
+            modal.focus();
+            const dropItems = modal.querySelectorAll('.drop-item');
+            dropItems.forEach((item, index) => {
+                item.style.transform = 'translateY(20px)';
+                item.style.opacity = '0';
+                setTimeout(() => {
+                    item.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                    item.style.transform = 'translateY(0)';
+                    item.style.opacity = '1';
+                }, index * 100);
+            });
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+            playSound('https://www.soundjay.com/buttons/button-09.mp3');
+        }
+
+        function playSound(url) {
+            try {
+                const sound = new Audio(url);
+                sound.play().catch(error => {
+                    console.warn('Audio playback failed:', error);
+                });
+            } catch (error) {
+                console.warn('Error creating audio:', error);
+            }
+        }
+
+        function breakLuckyBlock(modalId) {
+            const modal = document.getElementById(modalId);
+            const dropItems = modal.querySelectorAll('.drop-item');
+            const drops = Array.from(dropItems).map(item => ({
+                prob: parseFloat(item.getAttribute('data-prob')) * (item.classList.contains('rare') ? cloverLuckMultiplier : 1),
+                img: item.getAttribute('data-img'),
+                alt: item.getAttribute('data-alt'),
+                isRare: item.classList.contains('rare')
+            }));
+
+            // Calculate cumulative probabilities
+            let total = 0;
+            const cumulative = drops.map(drop => {
+                total += drop.prob;
+                return { ...drop, cumProb: total };
+            });
+
+            // Generate random number and select drop
+            const rand = Math.random() * total;
+            let selectedDrop = null;
+            for (const drop of cumulative) {
+                if (rand <= drop.cumProb) {
+                    selectedDrop = drop;
+                    break;
+                }
+            }
+
+            // Start cycling animation
+            const resultModal = document.getElementById('result-modal');
+            const resultImg = document.getElementById('result-drop-img');
+            resultModal.style.display = 'flex';
+            playSound('https://www.soundjay.com/buttons/button-07.mp3');
+            resultModal.focus();
+
+            let cycleIndex = 0;
+            let cycleCount = 0;
+            const maxCycles = 20; // Approximately 2 seconds at 100ms intervals
+            const cycleInterval = setInterval(() => {
+                resultImg.src = drops[cycleIndex].img;
+                resultImg.alt = drops[cycleIndex].alt;
+                cycleIndex = (cycleIndex + 1) % drops.length;
+                cycleCount++;
+
+                // Slow down towards the end
+                if (cycleCount >= maxCycles - 5) {
+                    clearInterval(cycleInterval);
+                    setTimeout(() => {
+                        resultImg.src = selectedDrop.img;
+                        resultImg.alt = selectedDrop.alt;
+                        resultImg.style.animation = 'popIn 0.5s ease';
+                        playSound('https://www.soundjay.com/buttons/button-07.mp3');
+                    }, 300);
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

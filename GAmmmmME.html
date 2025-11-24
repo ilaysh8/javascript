@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CapyGame - UFO Laser Stage</title>
+<style>
+:root{
+  --sky-top: #FFFBBD;
+  --sky-bottom: #BCE6FF;
+}
+html,body{height:100%; margin:0; overflow:hidden; font-family:sans-serif;}
+body {
+  background: url('https://pixabay.com/get/g6873ec577b4124f44c1b25ee7eb24f7738cfd7055ead74cd5057f1ea5bce2dcd95979ad5bbdb992055e87f91cfb05d7e968f9c37218568792efd82a7238740ed_1920.jpg') repeat-x;
+  background-size: cover;
+}
+#sky {
+  position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none;
+  background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
+  transition: background 1s linear;
+}
+#rain {
+  position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:1; pointer-events:none;
+  display:none; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 2px, transparent 2px, transparent 6px);
+  animation: rainAnim 0.3s linear infinite;
+}
+@keyframes rainAnim { 0% { transform: translateY(0); } 100% { transform: translateY(6px); } }
+#lightning {
+  position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:1; pointer-events:none;
+  display:none; background:rgba(255,255,255,0.8); opacity:0;
+}
+#stormMessage {
+  position: absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-size:48px; color:white; text-shadow:2px 2px 5px black; z-index:7; display:none;
+  animation: fadeInOut 3s ease-in-out forwards;
+}
+@keyframes fadeInOut { 0% { opacity:0; } 20% { opacity:1; } 80% { opacity:1; } 100% { opacity:0; } }
+
+#gameContainer {position:relative; width:100vw; height:100vh; overflow:hidden; z-index:2;}
+#woodBoard {position:absolute; bottom:100px; width:200%; height:80px; background:url('https://pixabay.com/get/g2a218b15ca4261f09ca100ad35fa3b59e873b978a0544cab1000ed869b1e088ab909ff51f70fa42326a811b5d9c93e77ca4e982f354ff7765f0d507d24ba429c_1280.jpg') repeat-x; background-size:contain; box-shadow:0 25px 40px rgba(0,0,0,0.6); z-index:4;}
+#player {position:absolute; bottom:150px; left:150px; width:160px; height:160px; background-image:url('file:///C:/Users/ilays/Downloads/ChatGPT%20Image%20Oct%2013,%202025,%2011_58_57%20AM-fotor-bg-remover-20251013115947.png'); background-size:contain; background-repeat:no-repeat; transform:scaleX(-1); transition:transform 0.5s ease; z-index:6;}
+.jump {animation: jumpAnim 0.8s forwards;}
+@keyframes jumpAnim {0%{transform:translateY(0) scaleX(-1);}40%{transform:translateY(-270px) scaleX(-1);}60%{transform:translateY(-270px) scaleX(-1);}100%{transform:translateY(0) scaleX(-1);}}
+.banana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('file:///C:/Users/ilays/Downloads/cute-illustration-of-banana-peel-on-isolated-background-vector-fotor-bg-remover-20251010192530.png'); background-size:contain; background-repeat:no-repeat; background-position:center; transform:rotate(5deg); z-index:5;}
+.bowl, .bowlEmpty {position:absolute; width:120px; height:100px; background-size:contain; background-repeat:no-repeat; z-index:5;}
+.bowl {background-image:url('file:///C:/Users/ilays/Downloads/dog-bowl-icon-dog-food-and-water-bowl-isolated-on-white-background-cartoon-illustration-cat-and-dog-food-cartoon-pet-feed-containers-or-packs-home-animals-wet-and-dry-meal-round-feeders-vector-fotor-bg-remover-2025.png');}
+.bowlEmpty {background-image:url('file:///C:/Users/ilays/Downloads/red-empty-dog-bowl-isolated-png-fotor-bg-remover-2025101020259.png'); transition:transform 0.4s ease-in-out, opacity 0.4s ease-in-out;}
+.puddle {position:absolute; bottom:150px; width:120px; height:60px; background-image:url('file:///C:/Users/ilays/Downloads/puddle.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
+#score {position:absolute; top:20px; left:20px; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
+#bowlCounter {position:absolute; top:60px; left:20px; display:flex; align-items:center; font-size:24px; color:white; text-shadow:2px 2px 5px black; z-index:7;}
+#bowlCounter img {width:50px; height:50px; margin-right:10px;}
+#gameOverScreen {display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(5px); color:#fff; font-size:48px; text-align:center; justify-content:center; align-items:center; flex-direction:column; z-index:20;}
+#gameOverScreen div {animation:bounce 1s infinite; margin-bottom:30px;}
+@keyframes bounce {0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+#restartBtn {padding:18px 36px; background:linear-gradient(135deg, #ffd700, #ffa500); border:none; border-radius:12px; cursor:pointer; font-size:24px; font-weight:bold; box-shadow:0 4px 15px rgba(255,215,0,0.6); transition:all 0.3s ease; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.3);}
+#restartBtn:hover {background:linear-gradient(135deg, #ffe066, #ffbc33); box-shadow:0 6px 20px rgba(255,255,0,0.9); transform:scale(1.05) translateY(-2px);}
+
+#speedBanana {position:absolute; bottom:150px; width:120px; height:100px; background-image:url('file:///C:/Users/ilays/Downloads/images%20(1)-fotor-bg-remover-2025101518538.png'); background-size:contain; background-repeat:no-repeat; background-position:center; z-index:5;}
+
+#creatorZoneBtn {
+  position:absolute; top:100px; right:20px; padding:14px 28px; background:linear-gradient(135deg, #ff4d4d, #cc0000); border:none; border-radius:10px; cursor:pointer; font-size:20px; font-weight:700; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.4); box-shadow:0 4px 15px rgba(255,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.3); transition:all 0.3s ease; z-index:7; display:none;
+}
+#creatorZoneBtn:hover {background:linear-gradient(135deg, #ff6666, #e60000); transform:scale(1.08) translateY(-3px); box-shadow:0 6px 20px rgba(255,0,0,0.7), inset 0 1px 5px rgba(255,255,255,0.5);}
+#creatorZoneBtn:active {transform:scale(0.98) translateY(0); box-shadow:0 2px 10px rgba(255,0,0,0.4);}
+
+#creatorZoneMenu {
+  position:absolute; top:150px; right:20px; background:linear-gradient(to bottom, rgba(30,30,30,0.95), rgba(0,0,0,0.9)); border-radius:12px; padding:12px; display:none; z-index:8; box-shadow:0 5px 25px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); width:240px;
+}
+#creatorZoneMenu button, #creatorZoneMenu input, #creatorZoneMenu .teleport-group {
+  display:block; width:100%; padding:10px; margin:6px 0; background:linear-gradient(90deg, #00ccff, #007acc); border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600; color:#fff; text-shadow:1px 1px 2px rgba(0,0,0,0.3); box-shadow:0 2px 10px rgba(0,204,255,0.4); transition:all 0.3s ease;
+}
+#creatorZoneMenu input {
+  background:linear-gradient(90deg, #333, #555); color:white; cursor:text; text-align:center;
+}
+#creatorZoneMenu button:hover, .teleport-group button:hover {
+  background:linear-gradient(90deg, #00e6ff, #0099cc); transform:scale(1.05) translateY(-2px); box-shadow:0 4px 15px rgba(0,204,255,0.6);
+}
+#creatorZoneMenu button:active, .teleport-group button:active {
+  transform:scale(0.98) translateY(0); box-shadow:0 1px 5px rgba(0,204,255,0.3);
+}
+.teleport-group {display:flex; gap:5px;}
+.teleport-group input {flex:1; margin:0;}
+.teleport-group button {width:60px; padding:8px; font-size:14px;}
+
+/* Leaderboard */
+#leaderboard {
+  position: absolute; top:60px; right:20px; background:rgba(0,0,0,0.75); color:white; padding:16px; border-radius:14px; font-size:18px; z-index:7; box-shadow:0 4px 20px rgba(0,0,0,0.5); width:220px; text-align:left; border:1px solid rgba(255,255,255,0.2); display:none;
+}
+#leaderboard .title {font-weight:bold; font-size:22px; margin-bottom:12px; text-shadow:1px 1px 3px rgba(0,0,0,0.7);}
+#leaderboard div {margin:6px 0; font-size:17px;}
+#clearLeaderboard {margin-top:12px; padding:8px 14px; background:#e63946; border:none; border-radius:8px; color:white; cursor:pointer; font-size:14px; font-weight:bold; transition:all 0.2s ease;}
+#clearLeaderboard:hover {background:#d00000; transform:scale(1.05);}
+
+#toggleLeaderboardBtn {
+  position:absolute; top:20px; right:20px; padding:10px 16px; background:linear-gradient(135deg, #4CAF50, #388E3C); color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px; font-weight:bold; z-index:8; box-shadow:0 3px 12px rgba(0,0,0,0.4); transition:all 0.3s ease; text-shadow:1px 1px 2px rgba(0,0,0,0.3);
+}
+#toggleLeaderboardBtn:hover {background:linear-gradient(135deg, #66BB6A, #43A047); transform:translateY(-2px) scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.5);}
+#toggleLeaderboardBtn:active {transform:translateY(0) scale(0.98);}
+
+/* Laser Gun */
+#laserGun {
+  position: absolute; 
+  bottom: 195px; 
+  left: 210px; 
+  width: 70px; 
+  height: 50px;
+  background: url('https://cdn-icons-png.flaticon.com/512/2909/2909556.png') center/contain no-repeat;
+  z-index: 7; 
+  display: none; 
+  transform: rotate(-25deg);
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+  transition: transform 0.1s ease;
+}
+
+/* UFO */
+.ufo {
+  position: absolute; width: 120px; height: 80px; background: url('https://clipart-library.com/images/8T68RMeac.png') center/contain no-repeat;
+  z-index: 5; filter: drop-shadow(0 0 10px #ff9500);
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+/* Laser Beam */
+.laser-beam {
+  position: absolute; background: linear-gradient(90deg, #ff0000, #ff9500); height: 6px; width: 0;
+  transform-origin: left center; z-index: 6; box-shadow: 0 0 15px #ff0000, 0 0 30px #ff9500;
+  animation: laserFire 0.4s ease-out forwards;
+}
+@keyframes laserFire {
+  0% { width: 0; opacity: 1; }
+  70% { width: 100%; opacity: 1; }
+  100% { width: 100%; opacity: 0; }
+}
+
+/* Enemy Laser */
+.enemy-laser {
+  position: absolute; width: 5px; height: 0; background: #00ff00; box-shadow: 0 0 15px #00ff00;
+  transform-origin: top center; z-index: 5; animation: enemyLaserFire 0.7s linear forwards;
+}
+@keyframes enemyLaserFire {
+  0% { height: 0; opacity: 1; }
+  100% { height: 100%; opacity: 0.7; }
+}
+
+/* Hearts */
+#hearts {
+  position: absolute; top: 20px; right: 20px; display: flex; gap: 8px; z-index: 7; display: none;
+}
+.heart {
+  width: 30px; height: 30px; background: url('https://cdn-icons-png.flaticon.com/512/210/210784.png') center/contain no-repeat;
+  filter: brightness(1.5);
+  animation: heartbeat 1.2s infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Stage Message */
+#stageMessage {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 48px; font-weight: bold; color: #00ff00; text-shadow: 0 0 10px #00ff00, 2px 2px 5px black;
+  z-index: 10; display: none; animation: pulse 2s ease-in-out;
+}
+@keyframes pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<div id="rain"></div>
+<div id="lightning"></div>
+<div id="stormMessage">A storm begins!</div>
+
+<div id="gameContainer">
+  <div id="woodBoard"></div>
+  <div id="player"></div>
+  <div id="laserGun"></div>
+  <div id="score">Score: 0</div>
+  <div id="bowlCounter">
+    <img src="file:///C:/Users/ilays/Downloads/red-empty-dog-bowl-isolated-png-fotor-bg-remover-2025101020259.png" alt="bowl">
+    <span id="bowlCount">0</span>
+  </div>
+
+  <div id="hearts"></div>
+  <div id="stageMessage"></div>
+
+  <button id="toggleLeaderboardBtn">Leaderboard</button>
+
+  <div id="gameOverScreen">
+    <div>Game Over!</div>
+    <button id="restartBtn">Restart</button>
+  </div>
+
+  <button id="creatorZoneBtn">Creator Zone</button>
+  <div id="creatorZoneMenu">
+    <div class="teleport-group">
+      <input type="number" id="teleportScoreInput" placeholder="Enter score..." min="0">
+      <button onclick="teleportToCustomScore()">Go</button>
+    </div>
+    <button onclick="setGameSpeed(0.5)">Speed: Slow</button>
+    <button onclick="setGameSpeed(1)">Speed: Normal</button>
+    <button onclick="setGameSpeed(2)">Speed: Fast</button>
+    <button onclick="setGameSpeed(4)">Speed: Very Fast</button>
+    <button onclick="teleportToScore(600)">Jump to 600</button>
+    <button onclick="teleportToScore(1000)">Jump to 1000</button>
+    <button onclick="toggleFlyMode()">Fly Mode</button>
+    <button onclick="setTimeOfDay('morning')">Morning</button>
+    <button onclick="setTimeOfDay('noon')">Noon</button>
+    <button onclick="setTimeOfDay('sunset')">Sunset</button>
+    <button onclick="setTimeOfDay('night')">Night</button>
+    <button onclick="setTimeOfDay('dawn')">Dawn</button>
+    <button onclick="setTimeOfDay('storm')">Storm</button>
+    <button onclick="toggleInvincibility()">Invincible</button>
+    <button onclick="addBowls(5)">+5 Bowls</button>
+    <button onclick="setPlayerSize(0.5)">Size: Small</button>
+    <button onclick="setPlayerSize(1)">Size: Normal</button>
+    <button onclick="setPlayerSize(1.5)">Size: Large</button>
+  </div>
+
+  <div id="leaderboard">
+    <div class="title">Leaderboard</div>
+    <div id="highScoreDisplay">High Score: 0</div>
+    <div id="totalBowlsDisplay">Total Bowls: 0</div>
+    <div id="gamesPlayedDisplay">Games Played: 0</div>
+    <button id="clearLeaderboard">Clear</button>
+  </div>
+</div>
+
+<script>
+// === Leaderboard System ===
+const STORAGE_KEY = 'capygame_leaderboard';
+function loadLeaderboard() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : { highScore: 0, totalBowls: 0, gamesPlayed: 0 };
+}
+function saveLeaderboard(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+let leaderboard = loadLeaderboard();
+
+function updateLeaderboardDisplay() {
+  document.getElementById('highScoreDisplay').textContent = `High Score: ${Math.floor(leaderboard.highScore)}`;
+  document.getElementById('totalBowlsDisplay').textContent = `Total Bowls: ${leaderboard.totalBowls}`;
+  document.getElementById('gamesPlayedDisplay').textContent = `Games Played: ${leaderboard.gamesPlayed}`;
+}
+document.getElementById('clearLeaderboard').addEventListener('click', () => {
+  if (confirm('Are you sure you want to clear all leaderboard data?')) {
+    leaderboard = { highScore: 0, totalBowls: 0, gamesPlayed: 0 };
+    saveLeaderboard(leaderboard);
+    updateLeaderboardDisplay();
+    alert('Leaderboard cleared!');
+  }
+});
+function toggleLeaderboard() {
+  const board = document.getElementById('leaderboard');
+  const btn = document.getElementById('toggleLeaderboardBtn');
+  if (board.style.display === 'none' || !board.style.display) {
+    board.style.display = 'block';
+    btn.textContent = 'Close';
+    btn.style.background = 'linear-gradient(135deg, #e63946, #c1121f)';
+  } else {
+    board.style.display = 'none';
+    btn.textContent = 'Leaderboard';
+    btn.style.background = 'linear-gradient(135deg, #4CAF50, #388E3C)';
+  }
+}
+document.getElementById('toggleLeaderboardBtn').addEventListener('click', toggleLeaderboard);
+updateLeaderboardDisplay();
+
+// === Game Start ===
+function startGame(){
+  const player = document.getElementById('player');
+  const laserGun = document.getElementById('laserGun');
+  const board = document.getElementById('woodBoard');
+  const scoreEl = document.getElementById('score');
+  const gameOverScreen = document.getElementById('gameOverScreen');
+  const restartBtn = document.getElementById('restartBtn');
+  const bowlCountEl = document.getElementById('bowlCount');
+  const sky = document.getElementById('sky');
+  const rain = document.getElementById('rain');
+  const lightning = document.getElementById('lightning');
+  const stormMessage = document.getElementById('stormMessage');
+  const creatorZoneBtn = document.getElementById('creatorZoneBtn');
+  const creatorZoneMenu = document.getElementById('creatorZoneMenu');
+  const heartsContainer = document.getElementById('hearts');
+  const stageMessage = document.getElementById('stageMessage');
+
+  let bgOffset=0, boardOffset=0, score=0;
+  let baseSpeed=6, speed=6, jumping=false, bananas=[], bowls=[], puddles=[], ufos = [], playerLasers = [], enemyLasers = [];
+  let bowlCount=0, gameOver=false;
+  let speedBoostActive=false, scoreMultiplier=1;
+  let flyMode=false, invincible=false, playerScale=1;
+  let keySequence=[], secretCode=['7','5','2','1','7','7'];
+  let playerY=150, lastKeyTime=0;
+  let isStorm=false, stormActive=false, lastStormScore=-500;
+  let slowEffect=false;
+  let laserEnabled = false;
+  let ufoStageActive = false;
+  let lives = 5;
+
+  const stages = [
+    {name:'morning', top:'#FFFBBD', bottom:'#BCE6FF'},
+    {name:'noon', top:'#A7DBFF', bottom:'#7EC8FF'},
+    {name:'sunset', top:'#FF9E3D', bottom:'#FF5E7D'},
+    {name:'night', top:'#020024', bottom:'#2a2a72'},
+    {name:'dawn', top:'#FFD59E', bottom:'#FFEEAA'}
+  ];
+  const stormStage = {name:'storm', top:'#4B5EAA', bottom:'#2A3B66'};
+  const stageCount = stages.length;
+
+  // === Hearts ===
+  function updateHearts() {
+    heartsContainer.innerHTML = '';
+    for (let i = 0; i < lives; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heartsContainer.appendChild(heart);
+    }
+    heartsContainer.style.display = ufoStageActive ? 'flex' : 'none';
+  }
+
+  // === UFO Stage – כל 600 נקודות, נמשך 500 נקודות (600–1099) ===
+  function isInUFOStage() {
+    const s = Math.floor(score);
+    const local = s % 1000;
+    return local >= 600 || (local < 100 && s >= 600); // 600–1099
+  }
+
+  function startUFOStage() {
+    if (ufoStageActive) return;
+    ufoStageActive = true;
+    lives = 5;
+    updateHearts();
+    stageMessage.textContent = 'UFO Invasion!';
+    stageMessage.style.display = 'block';
+    setTimeout(() => stageMessage.style.display = 'none', 3000);
+  }
+
+  function endUFOStage() {
+    if (!ufoStageActive) return;
+    ufoStageActive = false;
+    heartsContainer.style.display = 'none';
+    laserGun.style.display = 'none';
+    laserEnabled = false;
+    stageMessage.textContent = 'You survived the UFO stage!';
+    stageMessage.style.display = 'block';
+    setTimeout(() => stageMessage.style.display = 'none', 3000);
+    ufos.forEach(u => u.remove());
+    ufos = [];
+  }
+
+  // === Storm System ===
+  function triggerStorm() {
+    if (stormActive || gameOver) return;
+    stormActive = true; isStorm = true;
+    sky.style.background = `linear-gradient(to bottom, ${stormStage.top}, ${stormStage.bottom})`;
+    sky.style.opacity = '0.95';
+    rain.style.display = 'block';
+    stormMessage.style.display = 'block';
+    stormMessage.innerHTML = 'A storm begins!';
+
+    const lightningInterval = setInterval(() => {
+      if (!stormActive || gameOver) { clearInterval(lightningInterval); return; }
+      flashLightning();
+    }, Math.random() * 3000 + 1000);
+
+    setTimeout(() => { if (!gameOver) endStorm(); clearInterval(lightningInterval); }, Math.random() * 4000 + 8000);
+  }
+
+  function endStorm() {
+    stormActive = false; isStorm = false;
+    rain.style.display = 'none';
+    stormMessage.style.display = 'none';
+    updateSky(Math.floor(score));
+  }
+
+  function flashLightning() {
+    if (!isStorm || gameOver) return;
+    lightning.style.display = 'block'; lightning.style.opacity = '0.9';
+    setTimeout(() => lightning.style.opacity = '0.3', 50);
+    setTimeout(() => { lightning.style.opacity = '0'; setTimeout(() => lightning.style.display = 'none', 150); }, 200);
+  }
+
+  function checkStormTrigger(currentScore) {
+    const s = Math.floor(currentScore);
+    if (s >= 422 && s <= 500 && s > lastStormScore + 500 && !stormActive) {
+      lastStormScore = s;
+      triggerStorm();
+    }
+  }
+
+  // === Laser Gun & UFO System ===
+  function updateLaserGun() {
+    const currentScore = Math.floor(score);
+    if (currentScore >= 600 && !laserEnabled && ufoStageActive) {
+      laserEnabled = true;
+      laserGun.style.display = 'block';
+    }
+    if (laserEnabled && laserGun.style.display === 'block') {
+      laserGun.style.bottom = (playerY + 45) + 'px';
+      laserGun.style.left = (parseFloat(player.style.left) + 60) + 'px';
+    }
+  }
+
+  // === ירי לייזר ===
+  function shootLaser(e) {
+    if (!laserEnabled || gameOver || !ufoStageActive) return;
+
+    const gunRect = laserGun.getBoundingClientRect();
+    const startX = gunRect.left + gunRect.width / 2;
+    const startY = gunRect.top + gunRect.height / 2;
+    const endX = e.clientX;
+    const endY = e.clientY;
+
+    const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+    const distance = Math.hypot(endX - startX, endY - startY);
+
+    const beam = document.createElement('div');
+    beam.className = 'laser-beam';
+    beam.style.position = 'absolute';
+    beam.style.left = startX + 'px';
+    beam.style.top = startY + 'px';
+    beam.style.width = distance + 'px';
+    beam.style.height = '6px';
+    beam.style.background = 'linear-gradient(90deg, #ff0000, #ff9500)';
+    beam.style.boxShadow = '0 0 20px #ff9500, 0 0 40px #ff0000';
+    beam.style.transform = `rotate(${angle}deg)`;
+    beam.style.transformOrigin = 'left center';
+    beam.style.zIndex = '6';
+
+    document.getElementById('gameContainer').appendChild(beam);
+
+    setTimeout(() => {
+      const beamRect = beam.getBoundingClientRect();
+
+      ufos = ufos.filter((ufo, i) => {
+        const ufoRect = ufo.getBoundingClientRect();
+
+        const hit = (
+          beamRect.left < ufoRect.right &&
+          beamRect.right > ufoRect.left &&
+          beamRect.top < ufoRect.bottom &&
+          beamRect.bottom > ufoRect.top
+        );
+
+        if (hit) {
+          // פיצוץ רק כשפוגעים!
+          ufo.style.background = 'radial-gradient(circle, #ff9500, #ff0000, transparent)';
+          ufo.style.boxShadow = '0 0 50px #ff0000';
+          ufo.style.transition = 'all 0.3s ease-out';
+          ufo.style.transform = 'scale(1.6) rotate(20deg)';
+
+          setTimeout(() => ufo.remove(), 300);
+
+          score += 50;
+          scoreEl.textContent = 'Score: ' + Math.floor(score);
+          return false;
+        }
+        return true;
+      });
+
+      beam.remove();
+    }, 350);
+
+    setTimeout(() => beam.remove(), 400);
+  }
+
+  function spawnUFO() {
+    if (gameOver || !ufoStageActive) return;
+    const ufo = document.createElement('div');
+    ufo.classList.add('ufo');
+    ufo.style.left = innerWidth + 'px';
+    ufo.style.bottom = (200 + Math.random() * 300) + 'px';
+    document.getElementById('gameContainer').appendChild(ufo);
+    ufos.push(ufo);
+
+    const shootInterval = setInterval(() => {
+      if (!ufo.parentElement || gameOver || !ufoStageActive) {
+        clearInterval(shootInterval);
+        return;
+      }
+      shootEnemyLaser(ufo);
+    }, Math.random() * 2000 + 2000);
+  }
+
+  function shootEnemyLaser(ufo) {
+    const ur = ufo.getBoundingClientRect();
+    const pr = player.getBoundingClientRect();
+    const startX = ur.left + ur.width / 2;
+    const startY = ur.bottom;
+    const endY = pr.top + pr.height / 2;
+    const distance = endY - startY;
+
+    const laser = document.createElement('div');
+    laser.classList.add('enemy-laser');
+    laser.style.left = (startX - 2.5) + 'px';
+    laser.style.top = startY + 'px';
+    laser.style.height = distance + 'px';
+    document.getElementById('gameContainer').appendChild(laser);
+    enemyLasers.push(laser);
+
+    setTimeout(() => {
+      if (laser.parentElement) laser.remove();
+      enemyLasers = enemyLasers.filter(l => l !== laser);
+    }, 700);
+
+    setTimeout(() => {
+      if (gameOver || !ufoStageActive) return;
+      const lr = laser.getBoundingClientRect();
+      const pr = player.getBoundingClientRect();
+      if (lr.left < pr.right && lr.right > pr.left && lr.bottom > pr.top && lr.top < pr.bottom) {
+        lives--;
+        updateHearts();
+        if (lives <= 0) endGame();
+      }
+    }, 350);
+  }
+
+  // === Creator Zone Functions ===
+  window.setGameSpeed = function(m) {
+    speed = baseSpeed * m; scoreMultiplier = m;
+    creatorZoneMenu.style.display = 'none';
+    alert(`Speed set to: ${m === 0.5 ? 'Slow' : m === 1 ? 'Normal' : m === 2 ? 'Fast' : 'Very Fast'}`);
+  };
+
+  window.teleportToScore = function(target) {
+    score = target;
+    scoreEl.textContent = 'Score: ' + Math.floor(score);
+    updateSky(Math.floor(score));
+    checkStormTrigger(score);
+    creatorZoneMenu.style.display = 'none';
+    alert(`Teleported to ${target} points!`);
+  };
+
+  window.teleportToCustomScore = function() {
+    const input = document.getElementById('teleportScoreInput');
+    const target = parseInt(input.value);
+    if (!isNaN(target) && target >= 0) {
+      teleportToScore(target);
+      input.value = '';
+    } else {
+      alert('Please enter a valid number!');
+    }
+  };
+
+  window.toggleFlyMode = function() {
+    flyMode = !flyMode;
+    player.style.bottom = flyMode ? playerY + 'px' : '150px';
+    creatorZoneMenu.style.display = 'none';
+    alert(flyMode ? 'Fly mode enabled!' : 'Fly mode disabled!');
+  };
+
+  window.setTimeOfDay = function(time) {
+    const stage = time === 'storm' ? stormStage : stages.find(s => s.name === time);
+    if (stage) {
+      sky.style.background = `linear-gradient(to bottom, ${stage.top}, ${stage.bottom})`;
+      sky.style.opacity = (time === 'night' || time === 'storm') ? '0.95' : '0.92';
+      time === 'storm' ? triggerStorm() : endStorm();
+      creatorZoneMenu.style.display = 'none';
+      alert(`Time set to: ${time.charAt(0).toUpperCase() + time.slice(1)}`);
+    }
+  };
+
+  window.toggleInvincibility = function() {
+    invincible = !invincible;
+    creatorZoneMenu.style.display = 'none';
+    alert(invincible ? 'You are now invincible!' : 'Invincibility disabled');
+  };
+
+  window.addBowls = function(n) {
+    bowlCount += n; bowlCountEl.textContent = bowlCount;
+    creatorZoneMenu.style.display = 'none';
+    alert(`Added ${n} bowls! Total: ${bowlCount}`);
+  };
+
+  window.setPlayerSize = function(s) {
+    playerScale = s;
+    player.style.transform = flyMode ? `scale(${s})` : `scaleX(-${s}) scaleY(${s})`;
+    player.style.width = `${160 * s}px`;
+    player.style.height = `${160 * s}px`;
+    creatorZoneMenu.style.display = 'none';
+    alert(`Player size: ${s === 0.5 ? 'Small' : s === 1 ? 'Normal' : 'Large'}`);
+  };
+
+  // === Secret Code ===
+  document.addEventListener('keydown', e => {
+    if (gameOver) return;
+    if (e.key >= '0' && e.key <= '9') {
+      const now = Date.now();
+      if (now - lastKeyTime > 2000) keySequence = [];
+      lastKeyTime = now;
+      keySequence.push(e.key);
+      if (keySequence.length > secretCode.length) keySequence.shift();
+      if (keySequence.join('') === secretCode.join('')) {
+        creatorZoneBtn.style.display = 'block';
+        alert('Creator Zone unlocked!');
+      }
+    }
+    if (e.code === 'Space' && !jumping && !flyMode) {
+      jumping = true; player.classList.add('jump');
+      setTimeout(() => { player.classList.remove('jump'); jumping = false; }, 1000);
+    }
+    if (flyMode) {
+      if (e.code === 'ArrowUp') playerY = Math.min(playerY + 10, innerHeight - 160 * playerScale);
+      if (e.code === 'ArrowDown') playerY = Math.max(playerY - 10, 150);
+      player.style.bottom = playerY + 'px';
+    }
+  });
+
+  creatorZoneBtn.addEventListener('click', () => {
+    creatorZoneMenu.style.display = creatorZoneMenu.style.display === 'block' ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', shootLaser);
+
+  // === Game Objects ===
+  function createBanana() {
+    if (gameOver) return;
+    const b = document.createElement('div'); b.classList.add('banana');
+    let min = innerWidth, max = innerWidth * 1.5;
+    if (bananas.length > 0) {
+      const last = bananas[bananas.length-1];
+      min = parseFloat(last.style.left) + 600;
+      max = min + innerWidth * 0.5;
+    }
+    b.style.left = Math.floor(Math.random() * (max - min) + min) + 'px';
+    b.style.bottom = '150px';
+    document.getElementById('gameContainer').appendChild(b);
+    bananas.push(b);
+  }
+
+  function createBowl() {
+    if (gameOver) return;
+    const b = document.createElement('div'); b.classList.add('bowl');
+    b.style.left = innerWidth + 'px'; b.style.bottom = '150px';
+    document.getElementById('gameContainer').appendChild(b);
+    bowls.push(b);
+  }
+
+  function createPuddle() {
+    if (gameOver || !isStorm) return;
+    const p = document.createElement('div'); p.classList.add('puddle');
+    let min = innerWidth, max = innerWidth * 1.5;
+    if (puddles.length > 0) {
+      min = parseFloat(puddles[puddles.length-1].style.left) + 600;
+      max = min + innerWidth * 0.5;
+    }
+    p.style.left = Math.floor(Math.random() * (max - min) + min) + 'px';
+    p.style.bottom = '150px';
+    document.getElementById('gameContainer').appendChild(p);
+    puddles.push(p);
+  }
+
+  function eatBowl(i) {
+    const bowl = bowls[i];
+    const empty = document.createElement('div'); empty.classList.add('bowlEmpty');
+    empty.style.left = bowl.style.left; empty.style.bottom = bowl.style.bottom;
+    document.getElementById('gameContainer').appendChild(empty);
+    bowl.remove(); bowls.splice(i,1);
+    const target = document.getElementById('bowlCounter').getBoundingClientRect();
+    const r = empty.getBoundingClientRect();
+    const dx = target.left - r.left + 20, dy = target.top - r.top + 20;
+    empty.style.transform = `translate(${dx}px, ${dy-100}px) scale(0.4)`;
+    empty.style.opacity = '0.2';
+    setTimeout(() => {
+      empty.remove(); bowlCount++; bowlCountEl.textContent = bowlCount;
+      leaderboard.totalBowls++; saveLeaderboard(leaderboard); updateLeaderboardDisplay();
+    }, 400);
+  }
+
+  // === Sky Update ===
+  function hexToRgb(h) { h = h.replace('#',''); return [parseInt(h[0]+h[1],16), parseInt(h[2]+h[3],16), parseInt(h[4]+h[5],16)]; }
+  function lerp(a,b,t) { return a + (b-a)*t; }
+  function lerpColor(c1,c2,t) { return c1.map((v,i) => Math.round(lerp(v, c2[i], t))); }
+
+  function updateSky(currentScore) {
+    checkStormTrigger(currentScore);
+    if (stormActive) return;
+    const p = (currentScore % 1000) / 1000;
+    const stageLen = 1 / stageCount;
+    let idx = Math.floor(p / stageLen);
+    if (idx >= stageCount) idx = stageCount - 1;
+    const t = (p - idx * stageLen) / stageLen;
+    const cur = stages[idx], next = stages[(idx+1) % stageCount];
+    const top = lerpColor(hexToRgb(cur.top), hexToRgb(next.top), t);
+    const bot = lerpColor(hexToRgb(cur.bottom), hexToRgb(next.bottom), t);
+    sky.style.background = `linear-gradient(to bottom, rgb(${top}), rgb(${bot}))`;
+    sky.style.opacity = (cur.name === 'night' || next.name === 'night') ? '0.95' : '0.92';
+  }
+
+  // === Speed Banana ===
+  const speedBanana = document.createElement('div'); speedBanana.id = 'speedBanana';
+  speedBanana.style.left = '-500px'; speedBanana.style.display = 'none';
+  document.getElementById('gameContainer').appendChild(speedBanana);
+  let speedBananaActive = false;
+
+  function activateSpeedBoost() {
+    if (speedBoostActive) return;
+    speedBoostActive = true; speed *= 2; scoreMultiplier *= 2;
+    setTimeout(() => { speed /= 2; scoreMultiplier /= 2; speedBoostActive = false; }, 12000);
+  }
+
+  function spawnRandomSpeedBanana() {
+    if (gameOver || speedBananaActive) return;
+    speedBananaActive = true; speedBanana.style.display = 'block';
+    speedBanana.style.left = innerWidth + 'px'; speedBanana.style.bottom = '150px';
+  }
+  setInterval(spawnRandomSpeedBanana, 25000);
+
+  // === Game Loop ===
+  function gameLoop() {
+    if (gameOver) return;
+    bgOffset -= speed * 0.3; boardOffset -= speed;
+    document.body.style.backgroundPositionX = bgOffset + 'px';
+    board.style.backgroundPositionX = boardOffset + 'px';
+
+    updateLaserGun();
+
+    if (isInUFOStage() && !ufoStageActive) startUFOStage();
+    else if (!isInUFOStage() && ufoStageActive) endUFOStage();
+
+    // Bananas
+    for (let i = bananas.length - 1; i >= 0; i--) {
+      const b = bananas[i]; let left = parseFloat(b.style.left) - speed;
+      b.style.left = left + 'px';
+      if (left + b.offsetWidth < 0) { b.remove(); bananas.splice(i,1); continue; }
+      const pr = player.getBoundingClientRect(), br = b.getBoundingClientRect();
+      const hit = {left: br.left+30, right: br.right-30, top: br.top+20, bottom: br.bottom-20};
+      if (pr.left < hit.right && pr.right > hit.left && pr.bottom > hit.top && pr.top < hit.bottom && !jumping && !flyMode && !invincible) {
+        player.style.transform = "rotate(-45deg) scaleX(-1)"; endGame();
+      }
+    }
+
+    // Bowls
+    for (let i = bowls.length - 1; i >= 0; i--) {
+      const b = bowls[i]; let left = parseFloat(b.style.left) - speed;
+      b.style.left = left + 'px';
+      const pr = player.getBoundingClientRect(), br = b.getBoundingClientRect();
+      if (pr.left < br.right && pr.right > br.left && pr.bottom > br.top && pr.top < br.bottom) eatBowl(i);
+      if (left + b.offsetWidth < 0) { b.remove(); bowls.splice(i,1); }
+    }
+
+    // Puddles
+    for (let i = puddles.length - 1; i >= 0; i--) {
+      const p = puddles[i]; let left = parseFloat(p.style.left) - speed;
+      p.style.left = left + 'px';
+      const pr = player.getBoundingClientRect(), prr = p.getBoundingClientRect();
+      if (pr.left < prr.right && pr.right > prr.left && pr.bottom > prr.top && pr.top < prr.bottom && !jumping && !flyMode) {
+        if (!slowEffect) { slowEffect = true; speed *= 0.5; setTimeout(() => { speed /= 0.5; slowEffect = false; }, 3000); }
+      }
+      if (left + p.offsetWidth < 0) { p.remove(); puddles.splice(i,1); }
+    }
+
+    // UFOs – נעלם בשקט אם יוצא מהמסך
+    for (let i = ufos.length - 1; i >= 0; i--) {
+      const ufo = ufos[i];
+      let left = parseFloat(ufo.style.left) - speed * 0.8;
+      ufo.style.left = left + 'px';
+      if (left + ufo.offsetWidth < 0) { 
+        ufo.remove(); 
+        ufos.splice(i,1); 
+        continue; 
+      }
+    }
+
+    // Speed Banana
+    if (speedBananaActive) {
+      let left = parseFloat(speedBanana.style.left) - speed;
+      speedBanana.style.left = left + 'px';
+      const pr = player.getBoundingClientRect(), sr = speedBanana.getBoundingClientRect();
+      if (pr.left < sr.right && pr.right > sr.left && pr.bottom > sr.top && pr.top < sr.bottom) {
+        activateSpeedBoost(); speedBanana.style.display = 'none'; speedBanana.style.left = '-500px'; speedBananaActive = false;
+      }
+      if (left + speedBanana.offsetWidth < 0) { speedBanana.style.display = 'none'; speedBanana.style.left = '-500px'; speedBananaActive = false; }
+    }
+
+    score += 0.1 * scoreMultiplier;
+    scoreEl.textContent = 'Score: ' + Math.floor(score);
+    updateSky(Math.floor(score));
+    requestAnimationFrame(gameLoop);
+  }
+
+  function endGame() {
+    gameOver = true;
+    leaderboard.gamesPlayed++;
+    if (score > leaderboard.highScore) leaderboard.highScore = score;
+    saveLeaderboard(leaderboard); updateLeaderboardDisplay();
+    endStorm();
+    endUFOStage();
+    setTimeout(() => { gameOverScreen.style.display = 'flex'; creatorZoneBtn.style.display = 'none'; creatorZoneMenu.style.display = 'none'; }, 700);
+  }
+
+  restartBtn.addEventListener('click', () => {
+    [bananas, bowls, puddles, ufos].forEach(arr => arr.forEach(el => el.remove()));
+    playerLasers.forEach(l => l.remove()); enemyLasers.forEach(l => l.remove());
+    bananas = []; bowls = []; puddles = []; ufos = []; playerLasers = []; enemyLasers = [];
+    gameOver = false; score = 0; bowlCount = 0; bowlCountEl.textContent = '0';
+    bgOffset = 0; boardOffset = 0; player.style.transform = 'scaleX(-1)';
+    gameOverScreen.style.display = 'none';
+    speedBanana.style.left = '-500px'; speedBanana.style.display = 'none'; speedBananaActive = false;
+    flyMode = false; invincible = false; playerScale = 1; 
+    laserEnabled = false;
+    player.style.width = '160px'; player.style.height = '160px';
+    laserGun.style.display = 'none';
+    creatorZoneBtn.style.display = 'none'; creatorZoneMenu.style.display = 'none';
+    playerY = 150; player.style.bottom = '150px';
+    keySequence = []; speed = baseSpeed; scoreMultiplier = 1;
+    endStorm(); lastStormScore = -500;
+    ufoStageActive = false; lives = 5;
+    heartsContainer.innerHTML = ''; heartsContainer.style.display = 'none';
+    stageMessage.style.display = 'none';
+    document.getElementById('leaderboard').style.display = 'none';
+    document.getElementById('toggleLeaderboardBtn').textContent = 'Leaderboard';
+    document.getElementById('toggleLeaderboardBtn').style.background = 'linear-gradient(135deg, #4CAF50, #388E3C)';
+    gameLoop();
+  });
+
+  // === Scheduling ===
+  function scheduleBananas() { createBanana(); setTimeout(scheduleBananas, Math.random() * 1200 + 1000); }
+  function schedulePuddles() { createPuddle(); setTimeout(schedulePuddles, Math.random() * 1500 + 1000); }
+  function scheduleUFOs() { if (ufoStageActive) spawnUFO(); setTimeout(scheduleUFOs, Math.random() * 2500 + 1500); }
+
+  scheduleBananas();
+  setInterval(createBowl, 5000);
+  setInterval(schedulePuddles, 6000);
+  scheduleUFOs();
+  updateHearts();
+  gameLoop();
+}
+
+startGame();
+</script>
+</body>
+</html>
