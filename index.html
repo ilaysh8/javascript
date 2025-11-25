@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מסך פתיחה - קפיברה</title>
+    
+    <!-- הכותרת של הטאב בדפדפן -->
+    <title>capygames</title>
+    
+    <!-- FAVICON – הקפיברה עם האפרוחים (עובד בכל מקום ובכל גודל) -->
+    <link rel="icon" href="https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png" type="image/png">
+    <link rel="shortcut icon" href="https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png">
+    
+    <!-- מונע קאש ישן של favicon -->
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+
     <style>
         body {
             margin: 0;
@@ -64,16 +77,9 @@
         }
 
         @media (max-width: 800px) {
-            .button-container {
-                gap: 40px;
-            }
-            .image-button {
-                width: 200px;
-                height: 200px;
-            }
-            h1 {
-                font-size: 2.2em;
-            }
+            .button-container { gap: 40px; }
+            .image-button { width: 200px; height: 200px; }
+            h1 { font-size: 2.2em; }
         }
     </style>
 </head>
@@ -81,20 +87,18 @@
     <h1>ברוכים הבאים! בחרו אפשרות</h1>
     
     <div class="button-container">
-        <!-- כפתור ראשון - פותח 123.html -->
         <div>
             <button class="image-button" onclick="window.location.href='123.html'">
                 <img src="https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png" alt="קפיברה עם אפרוחים">
             </button>
-            <div class="label">flafi capy </div>
+            <div class="label">flafi capy</div>
         </div>
 
-        <!-- כפתור שני - פותח index.html -->
         <div>
             <button class="image-button" onclick="window.location.href='home.html'">
                 <img src="resources/capi.png" alt="קפיברה">
             </button>
-            <div class="label">capygame</div>
+            <div class="label">capy crom</div>
         </div>
     </div>
 </body>

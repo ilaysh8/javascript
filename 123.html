@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>flaficapy</title>
+<title>flaficapy – קפיברה פלאפי!</title>
 <style>
-    body{margin:0;overflow:hidden;background:#000;}
+    body{margin:0;overflow:hidden;background:#000;touch-action:manipulation;}
     canvas{display:block;}
 </style>
 </head>
@@ -17,6 +17,14 @@ const ctx = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
+// סקייל מהירות: 19% יותר מהיר מהגרסה האיטית הקודמת (מבוסס על 34.7% האיטי)
+const slowScale = 1 - 0.347;
+const speedScale = slowScale * 1.19; // ≈0.777
+const pipeSpeed = 4.5 * speedScale;
+const gravity = 0.85 * speedScale;
+const jumpVelocity = -14 * speedScale;
+const spawnInterval = Math.round(90 / speedScale);
+
 let birdY = canvas.height/2, vy = 0;
 let pipes = [];
 let score = 0;
@@ -26,9 +34,23 @@ let frameCount = 0;
 const birdImg = new Image();
 birdImg.src = "https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png";
 
-// שמיים יפהפיים שמשתנים לאט לאט (יום שלם = 30 דקות – תראה הכל תוך כדי משחק!)
+// פונקציית קפיצה אחת שמשמשת את כל סוגי הקלט
+function flap() {
+    if (gameOn) vy = jumpVelocity;
+}
+
+// תמיכה מלאה בטלפון ובמחשב
+document.addEventListener("click", flap);
+document.addEventListener("touchstart", e => { e.preventDefault(); flap(); });
+document.addEventListener("keydown", e => { 
+    if (e.code === "Space") { 
+        e.preventDefault(); 
+        flap(); 
+    }
+});
+
 function getSkyColors() {
-    const p = (frameCount / 60 / 30) % 1;  // 30 דקות = יום שלם
+    const p = (frameCount / 60 / 30) % 1;
     if (p < 0.25) return {top: lerp("#0f172a","#60a5fa",p*4),    bottom: lerp("#1e293b","#99f6e4",p*4)};
     if (p < 0.5)  return {top: "#60a5fa", bottom: "#99f6e4"};
     if (p < 0.75) return {top: lerp("#60a5fa","#fb923c", (p-0.5)*4), bottom: lerp("#99f6e4","#fecaca",(p-0.5)*4)};
@@ -72,15 +94,15 @@ function drawPipes() {
 function update() {
     if (!gameOn) return;
 
-    vy += 0.85;           // כבידה חזקה = כיף אמיתי!
+    vy += gravity;
     birdY += vy;
 
     if (birdY > canvas.height || birdY < -100) endGame();
 
-    if (frameCount % 90 === 0) createPipe();   // צינור כל 1.5 שניות
+    if (frameCount % spawnInterval === 0) createPipe();
 
     for (let i = pipes.length-1; i >= 0; i--) {
-        pipes[i].x -= 4.5;    // מהיר כמו פלאפי בירד אמיתי!
+        pipes[i].x -= pipeSpeed;
 
         if (pipes[i].x + 100 < 0) pipes.splice(i,1);
 
@@ -119,7 +141,6 @@ function drawSunMoon() {
 function loop() {
     frameCount++;
 
-    // רקע מדהים
     const sky = getSkyColors();
     const grad = ctx.createLinearGradient(0,0,0,canvas.height);
     grad.addColorStop(0, sky.top);
@@ -131,7 +152,6 @@ function loop() {
     drawPipes();
     drawBird();
 
-    // ניקוד ענק וברור
     ctx.fillStyle = "white";
     ctx.font = "bold 140px Arial";
     ctx.textAlign = "center";
@@ -143,16 +163,10 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-// קפיצה חזקה ומגניבה
-document.addEventListener("click", () => { if(gameOn) vy = -14; });
-document.addEventListener("keydown", e => { 
-    if(e.code === "Space") { e.preventDefault(); if(gameOn) vy = -14; }
-});
-
 function endGame() {
     gameOn = false;
     setTimeout(() => {
-        alert(`נסה שוב!`);
+        alert(`נפלת! הניקוד שלך: ${score}\nנסה שוב?`);
         score = 0;
         birdY = canvas.height/2;
         vy = 0;
@@ -166,7 +180,7 @@ window.addEventListener("resize", () => {
     canvas.height = innerHeight;
 });
 
-loop(); // מתחילים מיד – מהיר ומגניב!
+loop();
 </script>
 </body>
 </html>
