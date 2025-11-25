@@ -5,54 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>flaficapy – קפיברה פלאפי!</title>
 <style>
-    body{margin:0;overflow:hidden;background:#000;touch-action:none;user-select:none;}
+    body{margin:0;overflow:hidden;background:#000;touch-action:none;user-select:none;-webkit-user-select:none;font-family:Arial, sans-serif;}
     canvas{display:block;}
+    #menu{
+        position:absolute;top:0;left:0;width:100%;height:100%;
+        background:rgba(0,0,0,0.85);color:white;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:25px;
+        z-index:10;
+    }
+    h1{font-size:60px;margin:0;color:#00ff9d;text-shadow:0 0 20px #0f0;}
+    .btn{
+        padding:18px 40px;font-size:36px;background:#00ff9d;color:black;
+        border:none;border-radius:15px;cursor:pointer;min-width:320px;
+        box-shadow:0 0 30px #0f0;transition:0.2s;
+    }
+    .btn:hover{transform:scale(1.1);box-shadow:0 0 50px #0f0;}
 </style>
 </head>
 <body>
+
+<div id="menu">
+    <h1>פלאפי קאפי!</h1>
+    <button class="btn" data-speed="1.4">איטי מאוד (למתחילים)</button>
+    <button class="btn" data-speed="2.7">איטי</button>
+    <button class="btn" data-speed="4.2">בינוני</button>
+    <button class="btn" data-speed="6.0">מהיר</button>
+    <button class="btn" data-speed="8.5">מהיר מאוד!!!</button>
+</div>
+
 <canvas id="c"></canvas>
 <script>
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
+const menu = document.getElementById('menu');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-// המהירות האיטית המושלמת שלך
-const slowScale = 0.653;
-const pipeSpeed = 4.5 * slowScale;
-const gravity = 0.85 * slowScale;
-const jumpPower = 14 * slowScale;
-const spawnEveryFrames = Math.round(90 / slowScale);
+// ==== משתנים שייקבעו לפי בחירת השחקן ====
+let pipeSpeed = 2.7;        // ברירת מחדל (ישונה אחרי בחירה)
+const gravity = 0.40;
+const jumpPower = 9.2;
+const spawnEveryFrames = 148;
 
 let birdY = canvas.height / 2;
 let vy = 0;
 let pipes = [];
 let score = 0;
-let gameOn = true;
+let gameOn = false;  // מתחיל כבוי עד שבוחרים רמה
 let frameCount = 0;
 
 const birdImg = new Image();
 birdImg.src = "https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png";
 
-// קפיצה מיידית — בלי שום דיליי!
+// ==== בחירת רמה ====
+document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        pipeSpeed = parseFloat(btn.dataset.speed);
+        menu.style.display = 'none';
+        gameOn = true;
+        loop(); // מתחילים את המשחק!
+    });
+});
+
+// קפיצה
 function flap() {
     if (gameOn) vy = -jumpPower;
 }
-
-// הכי חשוב: חוסם הכל + passive:false כדי שיהיה 0ms latency
-document.addEventListener("touchstart", e => { e.preventDefault(); flap(); }, {passive: false});
-document.addEventListener("mousedown", e => { e.preventDefault(); flap(); });
-document.addEventListener("keydown", e => { if(e.code==="Space" || e.code==="ArrowUp"){ e.preventDefault(); flap(); } });
+document.addEventListener("touchstart", e => {e.preventDefault(); flap();}, {passive:false});
+document.addEventListener("mousedown", e => {e.preventDefault(); flap();});
+document.addEventListener("keydown", e => {if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();flap();}});
 
 function createPipe() {
     const top = 100 + Math.random() * (canvas.height - 500);
-    pipes.push({x: canvas.width, top: top, gap: 320, passed: false});
+    pipes.push({x: canvas.width, top: top, gap: 330, passed: false});
 }
 
 function drawBird() {
     ctx.save();
     ctx.translate(120, birdY);
-    ctx.rotate(vy * 0.05);
+    ctx.rotate(vy * 0.045);
     ctx.shadowBlur = 50;
     ctx.shadowColor = "#ff0";
     ctx.drawImage(birdImg, -60, -60, 120, 120);
@@ -66,7 +97,8 @@ function drawPipes() {
     pipes.forEach(p => {
         ctx.fillRect(p.x, 0, 100, p.top);
         ctx.fillRect(p.x-15, p.top-70, 130, 80);
-        ctx.fillRect(p.x, p.top + p.gap, 100, canvas.height);
+        const bottomHeight = canvas.height - p.top - p.gap;
+        ctx.fillRect(p.x, p.top + p.gap, 100, bottomHeight);
         ctx.fillRect(p.x-15, p.top + p.gap -10, 130, 80);
     });
 }
@@ -88,14 +120,14 @@ function update() {
             score++;
         }
 
-        if (120 + 50 > pipes[i].x && 120 - 50 < pipes[i].x + 100) {
-            if (birdY - 50 < pipes[i].top || birdY + 50 > pipes[i].top + pipes[i].gap) endGame();
+        if (120 + 55 > pipes[i].x && 120 - 55 < pipes[i].x + 100) {
+            if (birdY - 55 < pipes[i].top || birdY + 55 > pipes[i].top + pipes[i].gap) endGame();
         }
 
         if (pipes[i].x + 100 < 0) pipes.splice(i,1);
     }
 
-    if (birdY > canvas.height + 100 || birdY < -100) endGame();
+    if (birdY > canvas.height + 100 || birdY < -150) endGame();
 }
 
 function drawBackground() {
@@ -132,6 +164,8 @@ function lerp(a,b,t){
 }
 
 function loop() {
+    if (!gameOn) return; // לא מצייר כלום עד שבוחרים רמה
+
     drawBackground();
     drawPipes();
     drawBird();
@@ -150,7 +184,7 @@ function loop() {
 function endGame() {
     gameOn = false;
     setTimeout(()=>{
-        alert(`נפלת! הניקוד שלך: ${score}\nעוד פעם?`);
+        alert(`נפלת! הניקוד שלך: ${score}\nיאללה, עוד סיבוב!`);
         location.reload();
     }, 100);
 }
@@ -161,7 +195,7 @@ window.addEventListener("resize", ()=>{
     birdY = canvas.height / 2;
 });
 
-loop();
+// המשחק לא מתחיל עד שבוחרים רמה!
 </script>
 </body>
 </html>
