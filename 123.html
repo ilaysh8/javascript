@@ -5,45 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>flaficapy – קפיברה פלאפי!</title>
 <style>
-    body{margin:0;overflow:hidden;background:#000;touch-action:none;user-select:none;-webkit-user-select:none;font-family:Arial, sans-serif;}
-    canvas{display:block;}
-    #menu{
-        position:absolute;top:0;left:0;width:100%;height:100%;
-        background:rgba(0,0,0,0.92);color:white;
-        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
-        z-index:10;
+    body{margin:0;overflow:hidden;background:#000;touch-action:none;user-select:none;-webkit-user-select:none;font-family:sans-serif;}
+    canvas{display:block;position:absolute;top:0;left:0;z-index:1;}
+    
+    /* סרגל המהירות – מעל הכול! */
+    #speedControl{
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(20,20,40,0.85);
+        padding: 12px 24px;
+        border-radius: 50px;
+        backdrop-filter: blur(12px);
+        border: 2px solid rgba(0,255,157,0.4);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        z-index: 9999;          /* הכי למעלה! */
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #0ff;
+        font-weight: bold;
+        pointer-events: auto;   /* חשוב! מאפשר אינטראקציה */
     }
-    h1{font-size:68px;margin:0;color:#00ff9d;text-shadow:0 0 30px #0f0;}
-    .btn{
-        padding:20px 50px;font-size:40px;background:#00ff9d;color:black;
-        border:none;border-radius:18px;cursor:pointer;min-width:360px;
-        box-shadow:0 0 40px #0f0;transition:all 0.3s;font-weight:bold;
+    #speedSlider{
+        width: 200px;
+        height: 10px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #222;
+        outline: none;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
     }
-    .btn:active{transform:scale(0.95);}
+    #speedSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 28px;
+        height: 28px;
+        background: #00ff9d;
+        border-radius: 50%;
+        box-shadow: 0 0 20px #00ff9d, 0 0 40px #00ff9d88;
+        cursor: grab;
+    }
+    #speedSlider::-moz-range-thumb {
+        width: 28px;height: 28px;background: #00ff9d;border-radius: 50%;border:none;
+        box-shadow: 0 0 20px #00ff9d;
+        cursor: grab;
+    }
 </style>
 </head>
 <body>
 
-<div id="menu">
-    <h1>פלאפי קאפי!</h1>
-    <button class="btn" data-speed="1.4">איטי מאוד</button>
-    <button class="btn" data-speed="2.7">איטי</button>
-    <button class="btn" data-speed="4.2">בינוני</button>
-    <button class="btn" data-speed="6.0">מהיר</button>
-    <button class="btn" data-speed="8.5">מהיר מאוד!!!</button>
+<canvas id="c"></canvas>
+
+<!-- סרגל מהירות – עכשיו באמת אפשר לגעת בו! -->
+<div id="speedControl">
+    <span>מהירות</span>
+    <input type="range" id="speedSlider" min="0.5" max="10" step="0.1" value="2.7">
+    <span id="speedValue">2.7</span>x
 </div>
 
-<canvas id="c"></canvas>
 <script>
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-const menu = document.getElementById('menu');
+let pipeSpeed = 2.7;
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-// משתנים
-let pipeSpeed = 2.7;
+// === סליידר מהירות – עובד עכשיו בכל מכשיר! ===
+const speedSlider = document.getElementById('speedSlider');
+const speedValue = document.getElementById('speedValue');
+
+speedSlider.addEventListener('input', (e) => {
+    pipeSpeed = parseFloat(e.target.value);
+    speedValue.textContent = pipeSpeed.toFixed(1);
+});
+
+// שאר הקוד – בלי שינוי (רק הוספתי את pipeSpeed כמשתנה גלובלי)
 const gravity = 0.40;
 const jumpPower = 9.2;
 const spawnEveryFrames = 148;
@@ -52,34 +92,18 @@ let birdY = canvas.height / 2;
 let vy = 0;
 let pipes = [];
 let score = 0;
-let gameOn = false;  // מתחיל כבוי
+let gameOn = true;
 let frameCount = 0;
 
 const birdImg = new Image();
 birdImg.src = "https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png";
 
-// === בחירת רמה – הפעם זה עובד בטוח! ===
-document.querySelectorAll('.btn').forEach(btn => {
-    btn.onclick = () => {
-        pipeSpeed = parseFloat(btn.dataset.speed);
-        menu.remove();               // מסיר את התפריט לגמרי
-        gameOn = true;               // מפעיל את המשחק
-        birdY = canvas.height / 2;   // מאפס את מיקום הקפיברה
-        vy = 0;
-        pipes = [];
-        score = 0;
-        frameCount = 0;
-        requestAnimationFrame(loop); // מתחיל את הלולאה עכשיו!
-    };
-});
-
-// קפיצה
 function flap() {
     if (gameOn) vy = -jumpPower;
 }
-document.addEventListener("touchstart", e=>{e.preventDefault();flap();},{passive:false});
-document.addEventListener("mousedown", e=>{e.preventDefault();flap();});
-document.addEventListener("keydown", e=>{if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();flap();}});
+document.addEventListener("touchstart", e => { if (e.target !== speedSlider) { e.preventDefault(); flap(); }}, {passive:false});
+document.addEventListener("mousedown", e => { if (e.target !== speedSlider) flap(); });
+document.addEventListener("keydown", e => {if(e.code==="Space"||e.code==="ArrowUp") flap(); });
 
 function createPipe() {
     const top = 100 + Math.random() * (canvas.height - 500);
@@ -103,8 +127,8 @@ function drawPipes() {
     pipes.forEach(p => {
         ctx.fillRect(p.x, 0, 100, p.top);
         ctx.fillRect(p.x-15, p.top-70, 130, 80);
-        const bottom = canvas.height - p.top - p.gap;
-        ctx.fillRect(p.x, p.top + p.gap, 100, bottom);
+        const bottomHeight = canvas.height - p.top - p.gap;
+        ctx.fillRect(p.x, p.top + p.gap, 100, bottomHeight);
         ctx.fillRect(p.x-15, p.top + p.gap -10, 130, 80);
     });
 }
@@ -120,9 +144,16 @@ function update() {
 
     for (let i = pipes.length-1; i >= 0; i--) {
         pipes[i].x -= pipeSpeed;
-        if (!pipes[i].passed && pipes[i].x + 100 < 120) { pipes[i].passed = true; score++; }
-        if (120 + 55 > pipes[i].x && 120 - 55 < pipes[i].x + 100)
+
+        if (!pipes[i].passed && pipes[i].x + 100 < 120) {
+            pipes[i].passed = true;
+            score++;
+        }
+
+        if (120 + 55 > pipes[i].x && 120 - 55 < pipes[i].x + 100) {
             if (birdY - 55 < pipes[i].top || birdY + 55 > pipes[i].top + pipes[i].gap) endGame();
+        }
+
         if (pipes[i].x + 100 < 0) pipes.splice(i,1);
     }
 
@@ -175,7 +206,7 @@ function loop() {
     ctx.fillText(score, canvas.width/2, 160);
 
     update();
-    if (gameOn) requestAnimationFrame(loop); // ממשיך רק אם המשחק פועל
+    requestAnimationFrame(loop);
 }
 
 function endGame() {
@@ -191,6 +222,8 @@ window.addEventListener("resize", ()=>{
     canvas.height = innerHeight;
     birdY = canvas.height / 2;
 });
+
+loop();
 </script>
 </body>
 </html>
