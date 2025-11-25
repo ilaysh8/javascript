@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>flaficapy – קפיברה פלאפי!</title>
 <style>
-    body{margin:0;overflow:hidden;background:#000;touch-action:manipulation;}
+    body{margin:0;overflow:hidden;background:#000;touch-action:none;user-select:none;}
     canvas{display:block;}
 </style>
 </head>
@@ -17,15 +17,15 @@ const ctx = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-// סקייל מהירות: 19% יותר מהיר מהגרסה האיטית הקודמת (מבוסס על 34.7% האיטי)
-const slowScale = 1 - 0.347;
-const speedScale = slowScale * 1.19; // ≈0.777
-const pipeSpeed = 4.5 * speedScale;
-const gravity = 0.85 * speedScale;
-const jumpVelocity = -14 * speedScale;
-const spawnInterval = Math.round(90 / speedScale);
+// המהירות האיטית המושלמת שלך
+const slowScale = 0.653;
+const pipeSpeed = 4.5 * slowScale;
+const gravity = 0.85 * slowScale;
+const jumpPower = 14 * slowScale;
+const spawnEveryFrames = Math.round(90 / slowScale);
 
-let birdY = canvas.height/2, vy = 0;
+let birdY = canvas.height / 2;
+let vy = 0;
 let pipes = [];
 let score = 0;
 let gameOn = true;
@@ -34,60 +34,40 @@ let frameCount = 0;
 const birdImg = new Image();
 birdImg.src = "https://images.vexels.com/media/users/3/318414/isolated/preview/488949fc3555ba9f5c3d7a5b0130719a-capybara-carrying-chicks-on-its-back.png";
 
-// פונקציית קפיצה אחת שמשמשת את כל סוגי הקלט
+// קפיצה מיידית — בלי שום דיליי!
 function flap() {
-    if (gameOn) vy = jumpVelocity;
+    if (gameOn) vy = -jumpPower;
 }
 
-// תמיכה מלאה בטלפון ובמחשב
-document.addEventListener("click", flap);
-document.addEventListener("touchstart", e => { e.preventDefault(); flap(); });
-document.addEventListener("keydown", e => { 
-    if (e.code === "Space") { 
-        e.preventDefault(); 
-        flap(); 
-    }
-});
+// הכי חשוב: חוסם הכל + passive:false כדי שיהיה 0ms latency
+document.addEventListener("touchstart", e => { e.preventDefault(); flap(); }, {passive: false});
+document.addEventListener("mousedown", e => { e.preventDefault(); flap(); });
+document.addEventListener("keydown", e => { if(e.code==="Space" || e.code==="ArrowUp"){ e.preventDefault(); flap(); } });
 
-function getSkyColors() {
-    const p = (frameCount / 60 / 30) % 1;
-    if (p < 0.25) return {top: lerp("#0f172a","#60a5fa",p*4),    bottom: lerp("#1e293b","#99f6e4",p*4)};
-    if (p < 0.5)  return {top: "#60a5fa", bottom: "#99f6e4"};
-    if (p < 0.75) return {top: lerp("#60a5fa","#fb923c", (p-0.5)*4), bottom: lerp("#99f6e4","#fecaca",(p-0.5)*4)};
-    return {top: lerp("#fb923c","#1e293b",(p-0.75)*4), bottom: lerp("#fecaca","#475569",(p-0.75)*4)};
-}
-
-function lerp(a,b,t){
-    const ah=parseInt(a.slice(1),16), bh=parseInt(b.slice(1),16);
-    const ar=(ah>>16)&255, ag=(ah>>8)&255, ab=ah&255;
-    const br=(bh>>16)&255, bg=(bh>>8)&255, bb=bh&255;
-    return "#"+((1<<24)+((ar+t*(br-ar))<<16)+((ag+t*(bg-ag))<<8)+(ab+t*(bb-ab))|0).toString(16).slice(1);
+function createPipe() {
+    const top = 100 + Math.random() * (canvas.height - 500);
+    pipes.push({x: canvas.width, top: top, gap: 320, passed: false});
 }
 
 function drawBird() {
     ctx.save();
     ctx.translate(120, birdY);
-    ctx.rotate(vy * 0.08);
+    ctx.rotate(vy * 0.05);
     ctx.shadowBlur = 50;
     ctx.shadowColor = "#ff0";
     ctx.drawImage(birdImg, -60, -60, 120, 120);
     ctx.restore();
 }
 
-function createPipe() {
-    const h = 100 + Math.random() * (canvas.height - 500);
-    pipes.push({x: canvas.width, top: h, gap: 320, passed: false});
-}
-
 function drawPipes() {
+    ctx.fillStyle = "#00ff9d";
+    ctx.shadowColor = "#0f0";
+    ctx.shadowBlur = 25;
     pipes.forEach(p => {
-        ctx.fillStyle = "#00ff9d";
-        ctx.shadowBlur = 25;
-        ctx.shadowColor = "#0f0";
         ctx.fillRect(p.x, 0, 100, p.top);
         ctx.fillRect(p.x-15, p.top-70, 130, 80);
         ctx.fillRect(p.x, p.top + p.gap, 100, canvas.height);
-        ctx.fillRect(p.x-15, p.top + p.gap - 10, 130, 80);
+        ctx.fillRect(p.x-15, p.top + p.gap -10, 130, 80);
     });
 }
 
@@ -97,58 +77,62 @@ function update() {
     vy += gravity;
     birdY += vy;
 
-    if (birdY > canvas.height || birdY < -100) endGame();
-
-    if (frameCount % spawnInterval === 0) createPipe();
+    if (frameCount % spawnEveryFrames === 0) createPipe();
+    frameCount++;
 
     for (let i = pipes.length-1; i >= 0; i--) {
         pipes[i].x -= pipeSpeed;
-
-        if (pipes[i].x + 100 < 0) pipes.splice(i,1);
 
         if (!pipes[i].passed && pipes[i].x + 100 < 120) {
             pipes[i].passed = true;
             score++;
         }
 
-        if (120 + 60 > pipes[i].x && 120 - 60 < pipes[i].x + 100) {
-            if (birdY - 60 < pipes[i].top || birdY + 60 > pipes[i].top + pipes[i].gap) {
-                endGame();
-            }
+        if (120 + 50 > pipes[i].x && 120 - 50 < pipes[i].x + 100) {
+            if (birdY - 50 < pipes[i].top || birdY + 50 > pipes[i].top + pipes[i].gap) endGame();
         }
+
+        if (pipes[i].x + 100 < 0) pipes.splice(i,1);
     }
+
+    if (birdY > canvas.height + 100 || birdY < -100) endGame();
 }
 
-function drawSunMoon() {
-    const p = (frameCount / 60 / 30) % 1;
-    const angle = p * Math.PI * 2;
-    const x = canvas.width/2 + Math.cos(angle) * canvas.width * 0.7;
-    const y = canvas.height/2 + Math.sin(angle) * canvas.height * 0.4;
+function drawBackground() {
+    const cycle = (frameCount / 1800) % 1;
+    let top = "#0f172a", bottom = "#1e293b";
+    if (cycle < 0.25) { top = lerp("#0f172a","#60a5fa",cycle*4); bottom = lerp("#1e293b","#99f6e4",cycle*4); }
+    else if (cycle < 0.5) { top = "#60a5fa"; bottom = "#99f6e4"; }
+    else if (cycle < 0.75) { top = lerp("#60a5fa","#fb923c",(cycle-0.5)*4); bottom = lerp("#99f6e4","#fecaca",(cycle-0.5)*4); }
+    else { top = lerp("#fb923c","#1e293b",(cycle-0.75)*4); bottom = lerp("#fecaca","#475569",(cycle-0.75)*4); }
 
-    if (p < 0.75) {
-        ctx.fillStyle = "#FFD700";
-        ctx.shadowBlur = 120;
-        ctx.shadowColor = "#FFAA00";
-        ctx.beginPath(); ctx.arc(x, y, 90, 0, Math.PI*2); ctx.fill();
-    } else {
-        ctx.fillStyle = "#f0f8ff";
-        ctx.shadowBlur = 100;
-        ctx.shadowColor = "#ffffff88";
-        ctx.beginPath(); ctx.arc(x, y, 70, 0, Math.PI*2); ctx.fill();
-    }
-}
-
-function loop() {
-    frameCount++;
-
-    const sky = getSkyColors();
     const grad = ctx.createLinearGradient(0,0,0,canvas.height);
-    grad.addColorStop(0, sky.top);
-    grad.addColorStop(1, sky.bottom);
+    grad.addColorStop(0, top);
+    grad.addColorStop(1, bottom);
     ctx.fillStyle = grad;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    drawSunMoon();
+    const angle = cycle * Math.PI * 2;
+    const x = canvas.width/2 + Math.cos(angle) * canvas.width * 0.7;
+    const y = canvas.height/2 + Math.sin(angle) * canvas.height * 0.4;
+    if (cycle < 0.75) {
+        ctx.fillStyle = "#FFD700"; ctx.shadowColor = "#FFAA00"; ctx.shadowBlur = 120;
+        ctx.beginPath(); ctx.arc(x,y,90,0,Math.PI*2); ctx.fill();
+    } else {
+        ctx.fillStyle = "#f0f8ff"; ctx.shadowColor = "#ffffff88"; ctx.shadowBlur = 100;
+        ctx.beginPath(); ctx.arc(x,y,70,0,Math.PI*2); ctx.fill();
+    }
+}
+
+function lerp(a,b,t){
+    const ah=parseInt(a.slice(1),16), bh=parseInt(b.slice(1),16);
+    const ar=(ah>>16)&255, ag=(ah>>8)&255, ab=ah&255;
+    const br=(bh>>16)&255, bg=(bh>>8)&255, bb=bh&255;
+    return "#"+((1<<24)+((ar+t*(br-ar))<<16)+((ag+t*(bg-ag))<<8)+(ab+t*(bb-ab))|0).toString(16).slice(1);
+}
+
+function loop() {
+    drawBackground();
     drawPipes();
     drawBird();
 
@@ -165,19 +149,16 @@ function loop() {
 
 function endGame() {
     gameOn = false;
-    setTimeout(() => {
-        alert(`נפלת! הניקוד שלך: ${score}\nנסה שוב?`);
-        score = 0;
-        birdY = canvas.height/2;
-        vy = 0;
-        pipes = [];
-        gameOn = true;
+    setTimeout(()=>{
+        alert(`נפלת! הניקוד שלך: ${score}\nעוד פעם?`);
+        location.reload();
     }, 100);
 }
 
-window.addEventListener("resize", () => {
+window.addEventListener("resize", ()=>{
     canvas.width = innerWidth;
     canvas.height = innerHeight;
+    birdY = canvas.height / 2;
 });
 
 loop();
